@@ -1,5 +1,5 @@
 import React from "react";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from "recharts";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import CustomChartTooltip from "./CustomChartTooltip";
 
 const chartTypes = [
@@ -51,13 +51,13 @@ const MainChart = ({
     displayData = chartData.map((d) => ({ ...d, price: d.avgPrice }));
   }
 
-  const xLabel = xAxisOptions.find(opt => opt.value === categoryBy)?.label || '';
-  const yLabel = yAxisOptions.find(opt => opt.value === viewBy)?.label || '';
+  // X axis key is always 'x' (already grouped by categoryBy in chartData)
 
   return (
     <div className="flex-1 min-w-0 bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 mr-0 lg:mr-2 mb-4 lg:mb-0 flex flex-col justify-center" style={{ height: "450px" }}>
-      {/* Chart title */}
-      <div className="mb-4">
+      {/* Controls */}
+      <div className="flex flex-wrap gap-4 items-center mb-4">
+        {/* Editable title */}
         <div className="text-[#215273] font-semibold text-lg flex-1 min-w-[180px] relative">
           {editingTitle ? (
             <div className="relative w-full">
@@ -83,9 +83,6 @@ const MainChart = ({
             </span>
           )}
         </div>
-      </div>
-      {/* Controls */}
-      <div className="flex flex-wrap gap-4 items-center mb-4">
         {/* Chart type */}
         <div className="flex items-center gap-2">
           <span className="text-caption font-medium">Type of chart</span>
@@ -101,7 +98,7 @@ const MainChart = ({
         </div>
         {/* View by (y-axis) */}
         <div className="flex items-center gap-2">
-          <span className="text-caption font-medium">Rank</span>
+          <span className="text-caption font-medium">View by</span>
           <select
             className="bg-[#E6F0F8] text-[#3398FF] rounded px-2 py-1"
             value={viewBy}
@@ -138,12 +135,8 @@ const MainChart = ({
             }}
           >
             <CartesianGrid stroke="#EAEAEA" />
-            <XAxis dataKey="x" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }}>
-              <Label value={xLabel} offset={-8} position="insideBottom" style={{ fill: '#A3B3BF', fontSize: 14 }} />
-            </XAxis>
-            <YAxis stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }}>
-              <Label value={yLabel} angle={-90} position="insideLeft" style={{ fill: '#A3B3BF', fontSize: 14 }} />
-            </YAxis>
+            <XAxis dataKey="x" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }} />
+            <YAxis stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }} />
             <Tooltip content={<CustomChartTooltip yKey={yKey} />} cursor={{ fill: "#E6F0F8" }} />
             <Bar dataKey={yKey} fill="#C4E7FF" className="cursor-pointer" />
           </BarChart>
@@ -157,12 +150,8 @@ const MainChart = ({
             }}
           >
             <CartesianGrid stroke="#EAEAEA" />
-            <XAxis dataKey="x" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }}>
-              <Label value={xLabel} offset={-8} position="insideBottom" style={{ fill: '#A3B3BF', fontSize: 14 }} />
-            </XAxis>
-            <YAxis stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }}>
-              <Label value={yLabel} angle={-90} position="insideLeft" style={{ fill: '#A3B3BF', fontSize: 14 }} />
-            </YAxis>
+            <XAxis dataKey="x" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }} />
+            <YAxis stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }} />
             <Tooltip content={<CustomChartTooltip yKey={yKey} />} cursor={{ fill: "#E6F0F8" }} />
             <Line type="monotone" dataKey={yKey} stroke="#C4E7FF" strokeWidth={3} activeDot={{ r: 8, style: { cursor: "pointer" } }} />
           </LineChart>
