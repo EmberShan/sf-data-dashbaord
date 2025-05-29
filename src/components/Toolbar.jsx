@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Toolbar = ({ onCreateChart }) => {
+const Toolbar = ({ onCreateChart, onPrintPage }) => {
   const [activeTab, setActiveTab] = useState('analytics');
 
   const handleTabClick = (tabId) => {
@@ -9,7 +9,9 @@ const Toolbar = ({ onCreateChart }) => {
   };
 
   const handlePrint = () => {
-    window.print();
+    if (onPrintPage) {
+      onPrintPage();
+    }
   };
 
   return (
