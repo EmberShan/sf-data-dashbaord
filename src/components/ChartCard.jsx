@@ -9,11 +9,17 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import shirtData from "../data/shirts.js";
 import CustomChartTooltip from "./CustomChartTooltip";
 import ProductCard from "./ProductCard";
 import Modal from "./Modal";
+import MainChart from "./MainChart";
+import MarginPieChart from "./MarginPieChart";
+import BuyerRankingChart from "./BuyerRankingChart";
 
 const chartTypes = [
   { value: "bar", label: "Bar" },
@@ -41,6 +47,42 @@ function filterProductsByDate(products, start, end) {
     const date = new Date(product.date_added);
     return date >= start && date <= end;
   });
+}
+
+function getAllProducts() {
+  let allProducts = [];
+  shirtData.clothing_inventory.forEach((seasonObj) => {
+    seasonObj.product_lines.forEach((line) => {
+      line.products.forEach((product) => {
+        allProducts.push({
+          ...product,
+          season: seasonObj.season,
+          product_line: line.name,
+        });
+      });
+    });
+  });
+  return allProducts;
+}
+
+function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom }) {
+  const allProducts = getAllProducts();
+  if (useCustom) {
+    return filterProductsByDate(allProducts, customStart, customEnd);
+  } else {
+    const now = new Date();
+    let start;
+    if (dateRangeType === "year") {
+      start = new Date(now.getFullYear() - dateRangeValue, now.getMonth(), now.getDate());
+    } else if (dateRangeType === "quarter") {
+      start = new Date(now);
+      start.setMonth(now.getMonth() - 3 * dateRangeValue);
+    } else if (dateRangeType === "month") {
+      start = new Date(now);
+      start.setMonth(now.getMonth() - dateRangeValue);
+    }
+    return filterProductsByDate(allProducts, start, now);
+  }
 }
 
 function getChartData({
@@ -194,6 +236,16 @@ const ChartCard = ({
     x: d.x,
     margin: d.avgPrice && d.avgCost ? Number(((d.avgPrice - d.avgCost) / d.avgPrice * 100).toFixed(1)) : 0,
   }));
+
+  // --- Pie chart data for average margin (FIXED) ---
+  const filteredProducts = getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom });
+  const avgPrice = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.price || 0), 0) / filteredProducts.length : 0;
+  const avgCost = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.cost || 0), 0) / filteredProducts.length : 0;
+  const pieData = [
+    { name: "avg cost", value: avgCost },
+    { name: "margin", value: Math.max(avgPrice - avgCost, 0) },
+  ];
+  const pieColors = ["#C4E7FF", "#E6F0F8"];
 
   // --- Buyer ranking chart data (now inside component) ---
   let allFilteredProducts = [];
@@ -412,99 +464,19 @@ const ChartCard = ({
       {/* Chart */}
       <div className="w-full flex flex-row">
         {/* Left: Main chart */}
-        <div className="flex-1 min-w-0 bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 mr-0 lg:mr-2 mb-4 lg:mb-0 flex flex-col justify-center" style={{ height: "450px" }}>
-          <ResponsiveContainer width="100%" height="100%">
-            {chartType === "bar" ? (
-              <BarChart
-                data={chartData}
-                onMouseMove={state => setActiveTooltipIndex(state && state.activeTooltipIndex != null ? state.activeTooltipIndex : null)}
-                onMouseLeave={() => setActiveTooltipIndex(null)}
-                onClick={() => {
-                  if (activeTooltipIndex != null) handleBarOrDotClick(chartData[activeTooltipIndex]);
-                }}
-              >
-                <CartesianGrid stroke="#EAEAEA" />
-                <XAxis
-                  dataKey="x"
-                  stroke="#A3B3BF"
-                  tick={{ fill: "#A3B3BF", fontSize: 14 }}
-                />
-                <YAxis
-                  stroke="#A3B3BF"
-                  tick={{ fill: "#A3B3BF", fontSize: 14 }}
-                />
-                <Tooltip
-                  content={<CustomChartTooltip yKey="quantity" />}
-                  cursor={{ fill: "#E6F0F8" }}
-                />
-                <Bar
-                  dataKey="quantity"
-                  fill="#C4E7FF"
-                  className="cursor-pointer"
-                />
-              </BarChart>
-            ) : (
-              <LineChart
-                data={chartData}
-                onMouseMove={state => setActiveTooltipIndex(state && state.activeTooltipIndex != null ? state.activeTooltipIndex : null)}
-                onMouseLeave={() => setActiveTooltipIndex(null)}
-                onClick={() => {
-                  if (activeTooltipIndex != null) handleBarOrDotClick(chartData[activeTooltipIndex]);
-                }}
-              >
-                <CartesianGrid stroke="#EAEAEA" />
-                <XAxis
-                  dataKey="x"
-                  stroke="#A3B3BF"
-                  tick={{ fill: "#A3B3BF", fontSize: 14 }}
-                />
-                <YAxis
-                  stroke="#A3B3BF"
-                  tick={{ fill: "#A3B3BF", fontSize: 14 }}
-                />
-                <Tooltip
-                  content={<CustomChartTooltip yKey="quantity" />}
-                  cursor={{ fill: "#E6F0F8" }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="quantity"
-                  stroke="#C4E7FF"
-                  strokeWidth={3}
-                  activeDot={{ r: 8, style: { cursor: "pointer" } }}
-                />
-              </LineChart>
-            )}
-          </ResponsiveContainer>
-        </div>
+        <MainChart
+          chartType={chartType}
+          chartData={chartData}
+          handleBarOrDotClick={handleBarOrDotClick}
+          activeTooltipIndex={activeTooltipIndex}
+          setActiveTooltipIndex={setActiveTooltipIndex}
+        />
         {/* Right: Two stacked charts */}
         <div className="flex flex-col gap-2 w-[320px] min-w-[220px] max-w-[340px] h-[450px] overflow-y-auto">
-          {/* Top: Avg Margin % */}
-          <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex-1 min-h-[180px] max-h-[221px] flex flex-col">
-            <div className="text-[#215273] font-semibold text-base mb-2">Average Margin (%)</div>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={marginChartData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
-                <CartesianGrid stroke="#EAEAEA" vertical={false} />
-                <XAxis dataKey="x" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 12 }} />
-                <YAxis stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 12 }} domain={[0, 100]} />
-                <Tooltip formatter={(v) => `${v}%`} />
-                <Bar dataKey="margin" fill="#C4E7FF" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          {/* Top: Avg Margin Pie Chart */}
+          <MarginPieChart avgPrice={avgPrice} avgCost={avgCost} pieData={pieData} pieColors={pieColors} />
           {/* Bottom: Buyer ranking */}
-          <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex-1 min-h-[180px] max-h-[221px] flex flex-col overflow-y-auto">
-            <div className="text-[#215273] font-semibold text-base mb-2">PO quantities by companies</div>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={buyerRanking} layout="vertical" margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
-                <CartesianGrid stroke="#EAEAEA" horizontal={false} />
-                <XAxis type="number" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 12 }} hide />
-                <YAxis dataKey="buyer" type="category" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 12 }} width={90} />
-                <Tooltip formatter={(v) => v} />
-                <Bar dataKey="quantity" fill="#C4E7FF" radius={[0, 4, 4, 0]} barSize={16} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <BuyerRankingChart buyerRanking={buyerRanking} />
         </div>
       </div>
     </div>
