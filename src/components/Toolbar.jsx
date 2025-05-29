@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Toolbar = () => {
+const Toolbar = ({ onCreateChart }) => {
   const [activeTab, setActiveTab] = useState('analytics');
 
   const handleTabClick = (tabId) => {
@@ -58,17 +58,24 @@ const Toolbar = () => {
             </div>
           </nav>
 
-          {/* Right: Share + Print (not buttons) */}
+          {/* Right: Create Chart + Share + Print */}
           <div className="flex space-x-2">
             <div
+              onClick={onCreateChart}
+              className="px-3 py-1.5 border text-sm rounded border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+            >
+              <img src="/add.svg" alt="Add" className="w-4 h-4" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+              Create Chart
+            </div>
+            <div
               onClick={handlePrint}
-              className="px-3 py-1.5 border text-sm rounded border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer"
+              className="px-3 py-1.5 text-sm rounded text-gray-600 hover:bg-gray-100 cursor-pointer"
             >
               Print Page
             </div>
             <div
             //   onClick={() => alert('Share placeholder')}
-              className="px-3 py-1.5 border text-sm rounded border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer"
+              className="px-3 py-1.5 text-sm rounded text-gray-600 hover:bg-gray-100 cursor-pointer"
             >
               Share
             </div>

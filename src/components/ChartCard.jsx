@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import shirtData from "../data/shirts.js";
 import CustomChartTooltip from "./CustomChartTooltip";
+import ProductCard from "./ProductCard";
 
 const chartTypes = [
   { value: "bar", label: "Bar" },
@@ -159,6 +160,9 @@ const ChartCard = ({
   isLast,
 }) => {
   const [editingTitle, setEditingTitle] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalProducts, setModalProducts] = useState([]);
+  const [modalLabel, setModalLabel] = useState("");
 
   const chartData = getChartData({
     viewBy,
@@ -168,26 +172,90 @@ const ChartCard = ({
     customEnd,
   });
 
+  // Group products by product line for modal
+  function groupByProductLine(products) {
+    const lines = {};
+    products.forEach((p) => {
+      if (!lines[p.product_line]) lines[p.product_line] = [];
+      lines[p.product_line].push(p);
+    });
+    return lines;
+  }
+
+  // Modal component
+  function Modal({ open, onClose, label, products }) {
+    if (!open) return null;
+    const grouped = groupByProductLine(products);
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20" onClick={onClose}>
+        <div
+          className="bg-white rounded-xl border border-[#DDE9F3] p-8 max-w-3xl w-full max-h-[80vh] overflow-y-auto relative shadow-xl"
+          onClick={e => e.stopPropagation()}
+        >
+          <div
+            className="absolute p-4 top-4 right-4 text-[#A3B3BF] text-2xl font-bold hover:opacity-70 cursor-pointer select-none"
+            onClick={onClose}
+            role="button"
+            tabIndex={0}
+            aria-label="Close modal"
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClose(); }}
+          >
+            <img src="/close.svg" alt="Close" className="w-7 h-7" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          </div>
+          <div className="text-[#215273] font-semibold text-lg mb-4">{label}</div>
+          {Object.keys(grouped).length === 0 ? (
+            <div className="text-[#A3B3BF]">No products in this group.</div>
+          ) : (
+            Object.entries(grouped).map(([line, prods]) => (
+              <div key={line} className="mb-8">
+                <div className="text-[#3398FF] font-semibold text-base mb-2">{line}</div>
+                <div className="flex flex-wrap gap-2">
+                  {prods.map((prod) => (
+                    <ProductCard key={prod.product_id} product={prod} season={prod.season} productLine={line} />
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Chart click handler
+  const handleBarOrDotClick = (data) => {
+    setModalProducts(data.products || []);
+    setModalLabel(data.x || data.season || "");
+    setModalOpen(true);
+  };
+
+  // Track hovered/active index for tooltip
+  const [activeTooltipIndex, setActiveTooltipIndex] = useState(null);
+
   return (
     <div
       className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto"
       style={{ width: "80vw", maxWidth: 1200 }}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-[#215273] font-semibold text-lg">
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} label={modalLabel} products={modalProducts} />
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-[#215273] font-semibold text-lg w-1/2 relative">
           {editingTitle ? (
-            <input
-              className="font-semibold text-lg text-[#215273] bg-white border border-[#DDE9F3] rounded px-2 py-1 outline-none focus:border-[#3398FF]"
-              value={chartTitle}
-              autoFocus
-              onChange={e => setChartTitle(e.target.value)}
-              onBlur={() => setEditingTitle(false)}
-              onKeyDown={e => { if (e.key === 'Enter') setEditingTitle(false); }}
-              style={{ minWidth: 120, maxWidth: '100%' }}
-            />
+            <div className="relative w-full">
+              <input
+                className="font-semibold text-lg text-[#215273] bg-white outline-none w-full"
+                value={chartTitle}
+                autoFocus
+                onChange={e => setChartTitle(e.target.value)}
+                onBlur={() => setEditingTitle(false)}
+                onKeyDown={e => { if (e.key === 'Enter') setEditingTitle(false); }}
+                style={{ minWidth: 120 }}
+              />
+              <span className="block h-0.5 bg-[#3398FF] scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
+            </div>
           ) : (
             <span
-              className="cursor-pointer group inline-block"
+              className="cursor-pointer group inline-block w-full relative"
               onClick={() => setEditingTitle(true)}
               title="Click to edit title"
             >
@@ -198,7 +266,16 @@ const ChartCard = ({
         </div>
         <div className="flex items-center gap-6 ml-4">
           <div className="hover:opacity-80 cursor-pointer" onClick={onToggleExpand}>
-            <img src="/filter.svg" alt="Filter" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+            <img
+              src="/filter.svg"
+              alt="Filter"
+              className="w-6 h-6"
+              style={{
+                filter: expanded
+                  ? 'invert(62%) sepia(98%) saturate(749%) hue-rotate(176deg) brightness(101%) contrast(101%)' // #3398FF
+                  : 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' // #A3B3BF
+              }}
+            />
           </div>
           <div className={`hover:opacity-80 cursor-pointer${isFirst ? ' opacity-30 pointer-events-none' : ''}`} onClick={isFirst ? undefined : onMoveUp}>
             <img src="/up.svg" alt="Move Up" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
@@ -213,6 +290,13 @@ const ChartCard = ({
             <img src="/delete.svg" alt="Delete" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
           </div>
         </div>
+      </div>
+      {/* Chart settings summary */}
+      <div className="mb-6 text-sm font-medium" style={{ color: '#215273' }}>
+        {useCustom
+          ? `Custom: ${customStart.toISOString().slice(0, 10)} to ${customEnd.toISOString().slice(0, 10)}, View by ${viewByOptions.find(v => v.value === viewBy)?.label || viewBy}`
+          : `Past ${dateRangeValue} ${dateRangeTypes.find(d => d.value === dateRangeType)?.label}${dateRangeValue > 1 ? 's' : ''}, View by ${viewByOptions.find(v => v.value === viewBy)?.label || viewBy}`
+        }
       </div>
       {expanded && (
         <div className="bg-[#F9FBFC] rounded-lg p-4 mb-8 flex flex-col gap-4">
@@ -308,10 +392,17 @@ const ChartCard = ({
         </div>
       )}
       {/* Chart */}
-      <div style={{ width: "100%", height: "350px" }}>
+      <div style={{ width: "100%", height: "350px" }} className="cursor-pointer">
         <ResponsiveContainer width="100%" height="100%">
           {chartType === "bar" ? (
-            <BarChart data={chartData}>
+            <BarChart
+              data={chartData}
+              onMouseMove={state => setActiveTooltipIndex(state && state.activeTooltipIndex != null ? state.activeTooltipIndex : null)}
+              onMouseLeave={() => setActiveTooltipIndex(null)}
+              onClick={() => {
+                if (activeTooltipIndex != null) handleBarOrDotClick(chartData[activeTooltipIndex]);
+              }}
+            >
               <CartesianGrid stroke="#EAEAEA" />
               <XAxis
                 dataKey="x"
@@ -326,10 +417,21 @@ const ChartCard = ({
                 content={<CustomChartTooltip yKey="quantity" />}
                 cursor={{ fill: "#E6F0F8" }}
               />
-              <Bar dataKey="quantity" fill="#C4E7FF" />
+              <Bar
+                dataKey="quantity"
+                fill="#C4E7FF"
+                className="cursor-pointer"
+              />
             </BarChart>
           ) : (
-            <LineChart data={chartData}>
+            <LineChart
+              data={chartData}
+              onMouseMove={state => setActiveTooltipIndex(state && state.activeTooltipIndex != null ? state.activeTooltipIndex : null)}
+              onMouseLeave={() => setActiveTooltipIndex(null)}
+              onClick={() => {
+                if (activeTooltipIndex != null) handleBarOrDotClick(chartData[activeTooltipIndex]);
+              }}
+            >
               <CartesianGrid stroke="#EAEAEA" />
               <XAxis
                 dataKey="x"
@@ -349,6 +451,7 @@ const ChartCard = ({
                 dataKey="quantity"
                 stroke="#C4E7FF"
                 strokeWidth={3}
+                activeDot={{ r: 8, style: { cursor: "pointer" } }}
               />
             </LineChart>
           )}

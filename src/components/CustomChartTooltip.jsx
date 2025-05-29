@@ -6,12 +6,9 @@ const CustomChartTooltip = ({ active, payload, label, yKey = 'quantity' }) => {
     const topProducts = products.slice(0, 3);
     return (
       <div className="bg-white p-4 rounded shadow border border-[#DDE9F3] min-w-[220px]">
-        <div className="text-[#A3B3BF] text-sm mb-1">{label}</div>
-        {yKey === 'quantity' && (
-          <div className="text-[#215273] text-base font-semibold">Total Sold: {quantity}</div>
-        )}
-        <div className="text-[#215273] text-base font-semibold">Avg Price: ${avgPrice.toFixed(2)}</div>
-        <div className="text-[#215273] text-base font-semibold mb-2">Avg Cost: ${avgCost.toFixed(2)}</div>
+        <div className="text-[#215273] mb-1 font-semibold">{label}</div>
+
+        <div className="text-xs mb-2">Click to view products in detail</div>
         <div className="flex gap-2 mb-1">
           {topProducts.map((prod, idx) => (
             <img
@@ -23,7 +20,13 @@ const CustomChartTooltip = ({ active, payload, label, yKey = 'quantity' }) => {
             />
           ))}
         </div>
-        <div className="text-caption text-xs">Click to view products in detail</div>
+        
+
+        {yKey === 'quantity' && (
+          <div className="text-[#215273] text-sm font-semibold mt-4">Total Sold: {quantity}</div>
+        )}
+        <div className="text-[#215273] text-sm font-semibold">Avg Price: ${avgPrice.toFixed(2)}</div>
+        <div className="text-[#215273] text-sm font-semibold">Avg Cost: ${avgCost.toFixed(2)}</div>
       </div>
     );
   }
