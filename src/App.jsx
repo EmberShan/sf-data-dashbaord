@@ -9,7 +9,7 @@ const App = () => {
 
       {/* The charts */}
       <main className="w-full pt-32 mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ChartCard initialTitle="Product Count by Season & Type" />
+        <ChartCard />
         <ChartCard />
       </main>
     </div>
