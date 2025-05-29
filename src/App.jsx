@@ -1,18 +1,20 @@
-import shirtData from './data/shirts.json'
-import Toolbar from './components/Toolbar'
-import './App.css'
+import React, { useState, useEffect, useCallback } from "react";
+import ChartCard from "./components/ChartCard";
+import Toolbar from "./components/Toolbar";
+import "./App.css";
 
-function App() {
-  // Get the first product from the data for demonstration
-  const firstSeason = shirtData.clothing_inventory[0]
-  const firstProductLine = firstSeason.product_lines[0]
-  const firstProduct = firstProductLine.products[0]
-
+const App = () => {
   return (
-    <div className="bg-background ">
+    <div className="min-h-screen bg-blue w-screen">
       <Toolbar />
-    </div>
-  )
-}
 
-export default App
+      {/* The charts */}
+      <div className="pt-32 w-full mx-auto flex flex-col justify-center items-center">
+        <ChartCard initialTitle="Product Count by Season & Type" />
+        <ChartCard />
+      </div>
+    </div>
+  );
+};
+
+export default App;

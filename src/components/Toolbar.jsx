@@ -13,7 +13,7 @@ const Toolbar = () => {
   };
 
   return (
-    <header className="w-full bg-background fixed top-0 left-0 right-0 z-10">
+    <header className="w-full bg-white fixed top-0 left-0 z-50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 

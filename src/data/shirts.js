@@ -1,5 +1,4 @@
-{
-  "clothing_inventory": [
+const shirtData = {"clothing_inventory": [
     {
       "season": "Spring 2025",
       "product_lines": [
@@ -208,3 +207,4 @@
     }
   ]
 } 
+export default shirtData;
