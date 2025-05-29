@@ -207,7 +207,7 @@ const ChartCard = ({
             <div className="text-[#A3B3BF]">No products in this group.</div>
           ) : (
             Object.entries(grouped).map(([line, prods]) => (
-              <div key={line} className="mb-8">
+              <div key={line} className="mb-8 bg-[#F9FBFC] rounded-lg p-4">
                 <div className="text-[#3398FF] font-semibold text-base mb-2">{line}</div>
                 <div className="flex flex-wrap gap-2">
                   {prods.map((prod) => (

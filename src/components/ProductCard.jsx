@@ -1,83 +1,24 @@
 import React from "react";
 
-const cardStyle = {
-  width: 190,
-  border: "1px solid #CACCCF",
-  borderRadius: 8,
-  boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-  background: "#fff",
-  padding: 12,
-  margin: 12,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  position: "relative",
-};
-
-const imageStyle = {
-  width: 180,
-  height: 180,
-  background: "#ddd",
-  borderRadius: 4,
-  marginBottom: 12,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-const avatarStyle = {
-  width: 32,
-  height: 32,
-  borderRadius: "50%",
-  background: "#6C7A89",
-  color: "#fff",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontWeight: 600,
-  fontSize: 18,
-};
-
-const nameStyle = {
-  fontWeight: 600,
-  fontSize: 16,
-};
-
-const subtitleStyle = {
-  fontSize: 13,
-};
-
-const menuStyle = {
-  position: "absolute",
-  right: 12,
-  color: "#888",
-  cursor: "pointer",
-};
-
 export default function ProductCard({ product, season, productLine }) {
   return (
-    <div style={cardStyle}>
-      <div style={imageStyle}>
+    <div className="w-[190px] bg-white border border-[#DDE9F3] rounded-lg p-2 flex flex-col items-center relative">
+      <div className="w-[180px] h-[180px] bg-[#ddd] rounded mb-3 flex items-center justify-center overflow-hidden">
         <img
           src={product.image_url}
           alt={`${product.name} in ${product.color.join(' and ')}`}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            borderRadius: 4,
-          }}
+          className="w-full h-full object-cover rounded"
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row gap-2">
-          {/* <div style={avatarStyle}>
+          {/* <div className="w-8 h-8 rounded-full bg-[#6C7A89] text-white flex items-center justify-center font-semibold text-lg">
             {product.color[0][0]}
           </div> */}
           <div>
-            <div className="text-text" style={nameStyle}>{product.name}</div>
-            <div className="text-caption" style={subtitleStyle}>{productLine}</div>
-            <div className="text-caption" style={subtitleStyle}>{season}</div>
+            <div className="font-semibold text-base text-[#222]">{product.name}</div>
+            <div className="text-xs text-[#6C7A89]">{productLine}</div>
+            <div className="text-xs text-[#6C7A89]">{season}</div>
           </div>
         </div>
       </div>
