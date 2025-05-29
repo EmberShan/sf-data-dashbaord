@@ -13,6 +13,7 @@ import {
 import shirtData from "../data/shirts.js";
 import CustomChartTooltip from "./CustomChartTooltip";
 import ProductCard from "./ProductCard";
+import Modal from "./Modal";
 
 const chartTypes = [
   { value: "bar", label: "Bar" },
@@ -49,7 +50,6 @@ function getChartData({
   customStart,
   customEnd,
 }) {
-  // Flatten all products with their season and product line
   let allProducts = [];
   shirtData.clothing_inventory.forEach((seasonObj) => {
     seasonObj.product_lines.forEach((line) => {
@@ -63,7 +63,6 @@ function getChartData({
     });
   });
 
-  // Filter by date
   let filteredProducts = allProducts;
   if (dateRangeType === "custom") {
     filteredProducts = filterProductsByDate(
@@ -72,7 +71,6 @@ function getChartData({
       customEnd
     );
   } else {
-    // Past X year/quarter/month
     const now = new Date();
     let start;
     if (dateRangeType === "year") {
@@ -91,36 +89,42 @@ function getChartData({
     filteredProducts = filterProductsByDate(allProducts, start, now);
   }
 
-  // Group by viewBy
-  const groupKey =
-    viewBy === "year"
-      ? (p) => new Date(p.date_added).getFullYear()
-      : viewBy === "quarter"
-      ? (p) =>
-          `Q${Math.floor(new Date(p.date_added).getMonth() / 3) + 1} ${new Date(
-            p.date_added
-          ).getFullYear()}`
-      : viewBy === "month"
-      ? (p) =>
-          `${new Date(p.date_added).getMonth() + 1}/${new Date(
-            p.date_added
-          ).getFullYear()}`
-      : viewBy === "line"
-      ? (p) => p.product_line
-      : viewBy === "color"
-      ? (p) => p.color.join(", ")
-      : viewBy === "fabric"
-      ? (p) => p.fabric
-      : viewBy === "type"
-      ? (p) => p.type
-      : (p) => p.season;
-
-  const groups = {};
-  filteredProducts.forEach((p) => {
-    const key = groupKey(p);
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(p);
-  });
+  // Group by viewBy, with special handling for color
+  let groups = {};
+  if (viewBy === "color") {
+    filteredProducts.forEach((p) => {
+      p.color.forEach((color) => {
+        if (!groups[color]) groups[color] = [];
+        groups[color].push(p);
+      });
+    });
+  } else {
+    const groupKey =
+      viewBy === "year"
+        ? (p) => new Date(p.date_added).getFullYear()
+        : viewBy === "quarter"
+        ? (p) =>
+            `Q${Math.floor(new Date(p.date_added).getMonth() / 3) + 1} ${new Date(
+              p.date_added
+            ).getFullYear()}`
+        : viewBy === "month"
+        ? (p) =>
+            `${new Date(p.date_added).getMonth() + 1}/${new Date(
+              p.date_added
+            ).getFullYear()}`
+        : viewBy === "line"
+        ? (p) => p.product_line
+        : viewBy === "fabric"
+        ? (p) => p.fabric
+        : viewBy === "type"
+        ? (p) => p.type
+        : (p) => p.season;
+    filteredProducts.forEach((p) => {
+      const key = groupKey(p);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(p);
+    });
+  }
 
   return Object.entries(groups).map(([key, products]) => ({
     x: key,
@@ -173,53 +177,16 @@ const ChartCard = ({
   });
 
   // Group products by product line for modal
-  function groupByProductLine(products) {
+  function groupByProductLine(products, colorGroup) {
     const lines = {};
     products.forEach((p) => {
-      if (!lines[p.product_line]) lines[p.product_line] = [];
-      lines[p.product_line].push(p);
+      // If colorGroup is set, only include products that have that color
+      if (!colorGroup || (p.color && p.color.includes(colorGroup))) {
+        if (!lines[p.product_line]) lines[p.product_line] = [];
+        lines[p.product_line].push(p);
+      }
     });
     return lines;
-  }
-
-  // Modal component
-  function Modal({ open, onClose, label, products }) {
-    if (!open) return null;
-    const grouped = groupByProductLine(products);
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20" onClick={onClose}>
-        <div
-          className="bg-white rounded-xl border border-[#DDE9F3] p-8 max-w-3xl w-full max-h-[80vh] overflow-y-auto relative shadow-xl"
-          onClick={e => e.stopPropagation()}
-        >
-          <div
-            className="absolute p-4 top-4 right-4 text-[#A3B3BF] text-2xl font-bold hover:opacity-70 cursor-pointer select-none"
-            onClick={onClose}
-            role="button"
-            tabIndex={0}
-            aria-label="Close modal"
-            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClose(); }}
-          >
-            <img src="/close.svg" alt="Close" className="w-7 h-7" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
-          </div>
-          <div className="text-[#215273] font-semibold text-lg mb-4">{label}</div>
-          {Object.keys(grouped).length === 0 ? (
-            <div className="text-[#A3B3BF]">No products in this group.</div>
-          ) : (
-            Object.entries(grouped).map(([line, prods]) => (
-              <div key={line} className="mb-8 bg-[#F9FBFC] rounded-lg p-4">
-                <div className="text-[#3398FF] font-semibold text-base mb-2">{line}</div>
-                <div className="flex flex-wrap gap-2">
-                  {prods.map((prod) => (
-                    <ProductCard key={prod.product_id} product={prod} season={prod.season} productLine={line} />
-                  ))}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    );
   }
 
   // Chart click handler
@@ -237,7 +204,7 @@ const ChartCard = ({
       className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto"
       style={{ width: "80vw", maxWidth: 1200 }}
     >
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} label={modalLabel} products={modalProducts} />
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} label={modalLabel} products={modalProducts} viewBy={viewBy} groupByProductLine={groupByProductLine} />
       <div className="flex items-center justify-between mb-2">
         <div className="text-[#215273] font-semibold text-lg w-1/2 relative">
           {editingTitle ? (

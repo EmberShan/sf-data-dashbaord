@@ -73,7 +73,7 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
               onClick={handlePrint}
               className="px-3 py-1.5 text-sm rounded text-gray-600 hover:bg-gray-100 cursor-pointer"
             >
-              Print Page
+              Download Report PDF
             </div>
             <div
             //   onClick={() => alert('Share placeholder')}
