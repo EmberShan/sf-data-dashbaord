@@ -158,27 +158,46 @@ const ChartCard = () => {
       className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto"
       style={{ width: "80vw", maxWidth: 1200 }}
     >
-      <div className="text-[#215273] font-semibold text-lg mb-4">
-        {editingTitle ? (
-          <input
-            className="font-semibold text-lg text-[#215273] bg-white border border-[#DDE9F3] rounded px-2 py-1 outline-none focus:border-[#3398FF]"
-            value={chartTitle}
-            autoFocus
-            onChange={e => setChartTitle(e.target.value)}
-            onBlur={() => setEditingTitle(false)}
-            onKeyDown={e => { if (e.key === 'Enter') setEditingTitle(false); }}
-            style={{ minWidth: 120, maxWidth: '100%' }}
-          />
-        ) : (
-          <span
-            className="cursor-pointer group inline-block"
-            onClick={() => setEditingTitle(true)}
-            title="Click to edit title"
-          >
-            {chartTitle}
-            <span className="block h-0.5 bg-[#3398FF] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
-          </span>
-        )}
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-[#215273] font-semibold text-lg">
+          {editingTitle ? (
+            <input
+              className="font-semibold text-lg text-[#215273] bg-white border border-[#DDE9F3] rounded px-2 py-1 outline-none focus:border-[#3398FF]"
+              value={chartTitle}
+              autoFocus
+              onChange={e => setChartTitle(e.target.value)}
+              onBlur={() => setEditingTitle(false)}
+              onKeyDown={e => { if (e.key === 'Enter') setEditingTitle(false); }}
+              style={{ minWidth: 120, maxWidth: '100%' }}
+            />
+          ) : (
+            <span
+              className="cursor-pointer group inline-block"
+              onClick={() => setEditingTitle(true)}
+              title="Click to edit title"
+            >
+              {chartTitle}
+              <span className="block h-0.5 bg-[#3398FF] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-6 ml-4">
+          <div className="hover:opacity-80 cursor-pointer">
+            <img src="/filter.svg" alt="Filter" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          </div>
+          <div className="hover:opacity-80 cursor-pointer">
+            <img src="/up.svg" alt="Move Up" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          </div>
+          <div className="hover:opacity-80 cursor-pointer">
+            <img src="/down.svg" alt="Move Down" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          </div>
+          <div className="hover:opacity-80 cursor-pointer">
+            <img src="/duplicate.svg" alt="Duplicate" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          </div>
+          <div className="hover:opacity-80 cursor-pointer">
+            <img src="/delete.svg" alt="Delete" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          </div>
+        </div>
       </div>
       {/* Chart Settings */}
       <div className="bg-[#F9FBFC] rounded-lg p-4 mb-8 flex flex-col gap-4">
