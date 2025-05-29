@@ -137,6 +137,19 @@ function getChartData({
   }));
 }
 
+// --- Helper: Aggregate buyer data from filtered products ---
+function getBuyerRanking(products) {
+  const buyerMap = {};
+  products.forEach((p) => {
+    if (!buyerMap[p.buyer]) buyerMap[p.buyer] = 0;
+    buyerMap[p.buyer] += p.quantity_sold || 0;
+  });
+  // Convert to array and sort descending
+  return Object.entries(buyerMap)
+    .map(([buyer, quantity]) => ({ buyer, quantity }))
+    .sort((a, b) => b.quantity - a.quantity);
+}
+
 const ChartCard = ({
   chartType,
   setChartType,
@@ -175,6 +188,44 @@ const ChartCard = ({
     customStart,
     customEnd,
   });
+
+  // --- Margin chart data (now inside component) ---
+  const marginChartData = chartData.map((d) => ({
+    x: d.x,
+    margin: d.avgPrice && d.avgCost ? Number(((d.avgPrice - d.avgCost) / d.avgPrice * 100).toFixed(1)) : 0,
+  }));
+
+  // --- Buyer ranking chart data (now inside component) ---
+  let allFilteredProducts = [];
+  shirtData.clothing_inventory.forEach((seasonObj) => {
+    seasonObj.product_lines.forEach((line) => {
+      line.products.forEach((product) => {
+        // Apply the same date filtering as getChartData
+        const date = new Date(product.date_added);
+        let inRange = false;
+        if (useCustom) {
+          inRange = date >= customStart && date <= customEnd;
+        } else {
+          const now = new Date();
+          let start;
+          if (dateRangeType === "year") {
+            start = new Date(now.getFullYear() - dateRangeValue, now.getMonth(), now.getDate());
+          } else if (dateRangeType === "quarter") {
+            start = new Date(now);
+            start.setMonth(now.getMonth() - 3 * dateRangeValue);
+          } else if (dateRangeType === "month") {
+            start = new Date(now);
+            start.setMonth(now.getMonth() - dateRangeValue);
+          }
+          inRange = date >= start && date <= now;
+        }
+        if (inRange) {
+          allFilteredProducts.push(product);
+        }
+      });
+    });
+  });
+  const buyerRanking = getBuyerRanking(allFilteredProducts);
 
   // Group products by product line for modal
   function groupByProductLine(products, colorGroup) {
@@ -359,70 +410,102 @@ const ChartCard = ({
         </div>
       )}
       {/* Chart */}
-      <div style={{ width: "100%", height: "350px" }} className="cursor-pointer">
-        <ResponsiveContainer width="100%" height="100%">
-          {chartType === "bar" ? (
-            <BarChart
-              data={chartData}
-              onMouseMove={state => setActiveTooltipIndex(state && state.activeTooltipIndex != null ? state.activeTooltipIndex : null)}
-              onMouseLeave={() => setActiveTooltipIndex(null)}
-              onClick={() => {
-                if (activeTooltipIndex != null) handleBarOrDotClick(chartData[activeTooltipIndex]);
-              }}
-            >
-              <CartesianGrid stroke="#EAEAEA" />
-              <XAxis
-                dataKey="x"
-                stroke="#A3B3BF"
-                tick={{ fill: "#A3B3BF", fontSize: 14 }}
-              />
-              <YAxis
-                stroke="#A3B3BF"
-                tick={{ fill: "#A3B3BF", fontSize: 14 }}
-              />
-              <Tooltip
-                content={<CustomChartTooltip yKey="quantity" />}
-                cursor={{ fill: "#E6F0F8" }}
-              />
-              <Bar
-                dataKey="quantity"
-                fill="#C4E7FF"
-                className="cursor-pointer"
-              />
-            </BarChart>
-          ) : (
-            <LineChart
-              data={chartData}
-              onMouseMove={state => setActiveTooltipIndex(state && state.activeTooltipIndex != null ? state.activeTooltipIndex : null)}
-              onMouseLeave={() => setActiveTooltipIndex(null)}
-              onClick={() => {
-                if (activeTooltipIndex != null) handleBarOrDotClick(chartData[activeTooltipIndex]);
-              }}
-            >
-              <CartesianGrid stroke="#EAEAEA" />
-              <XAxis
-                dataKey="x"
-                stroke="#A3B3BF"
-                tick={{ fill: "#A3B3BF", fontSize: 14 }}
-              />
-              <YAxis
-                stroke="#A3B3BF"
-                tick={{ fill: "#A3B3BF", fontSize: 14 }}
-              />
-              <Tooltip
-                content={<CustomChartTooltip yKey="quantity" />}
-                cursor={{ fill: "#E6F0F8" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="quantity"
-                stroke="#C4E7FF"
-                strokeWidth={3}
-                activeDot={{ r: 8, style: { cursor: "pointer" } }}
-              />
-            </LineChart>
-          )}
-        </ResponsiveContainer>
+      <div className="w-full flex flex-row">
+        {/* Left: Main chart */}
+        <div className="flex-1 min-w-0 bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 mr-0 lg:mr-2 mb-4 lg:mb-0 flex flex-col justify-center" style={{ height: "450px" }}>
+          <ResponsiveContainer width="100%" height="100%">
+            {chartType === "bar" ? (
+              <BarChart
+                data={chartData}
+                onMouseMove={state => setActiveTooltipIndex(state && state.activeTooltipIndex != null ? state.activeTooltipIndex : null)}
+                onMouseLeave={() => setActiveTooltipIndex(null)}
+                onClick={() => {
+                  if (activeTooltipIndex != null) handleBarOrDotClick(chartData[activeTooltipIndex]);
+                }}
+              >
+                <CartesianGrid stroke="#EAEAEA" />
+                <XAxis
+                  dataKey="x"
+                  stroke="#A3B3BF"
+                  tick={{ fill: "#A3B3BF", fontSize: 14 }}
+                />
+                <YAxis
+                  stroke="#A3B3BF"
+                  tick={{ fill: "#A3B3BF", fontSize: 14 }}
+                />
+                <Tooltip
+                  content={<CustomChartTooltip yKey="quantity" />}
+                  cursor={{ fill: "#E6F0F8" }}
+                />
+                <Bar
+                  dataKey="quantity"
+                  fill="#C4E7FF"
+                  className="cursor-pointer"
+                />
+              </BarChart>
+            ) : (
+              <LineChart
+                data={chartData}
+                onMouseMove={state => setActiveTooltipIndex(state && state.activeTooltipIndex != null ? state.activeTooltipIndex : null)}
+                onMouseLeave={() => setActiveTooltipIndex(null)}
+                onClick={() => {
+                  if (activeTooltipIndex != null) handleBarOrDotClick(chartData[activeTooltipIndex]);
+                }}
+              >
+                <CartesianGrid stroke="#EAEAEA" />
+                <XAxis
+                  dataKey="x"
+                  stroke="#A3B3BF"
+                  tick={{ fill: "#A3B3BF", fontSize: 14 }}
+                />
+                <YAxis
+                  stroke="#A3B3BF"
+                  tick={{ fill: "#A3B3BF", fontSize: 14 }}
+                />
+                <Tooltip
+                  content={<CustomChartTooltip yKey="quantity" />}
+                  cursor={{ fill: "#E6F0F8" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="quantity"
+                  stroke="#C4E7FF"
+                  strokeWidth={3}
+                  activeDot={{ r: 8, style: { cursor: "pointer" } }}
+                />
+              </LineChart>
+            )}
+          </ResponsiveContainer>
+        </div>
+        {/* Right: Two stacked charts */}
+        <div className="flex flex-col gap-2 w-[320px] min-w-[220px] max-w-[340px] h-[450px] overflow-y-auto">
+          {/* Top: Avg Margin % */}
+          <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex-1 min-h-[180px] max-h-[221px] flex flex-col">
+            <div className="text-[#215273] font-semibold text-base mb-2">Average Margin (%)</div>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={marginChartData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+                <CartesianGrid stroke="#EAEAEA" vertical={false} />
+                <XAxis dataKey="x" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 12 }} />
+                <YAxis stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 12 }} domain={[0, 100]} />
+                <Tooltip formatter={(v) => `${v}%`} />
+                <Bar dataKey="margin" fill="#C4E7FF" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          {/* Bottom: Buyer ranking */}
+          <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex-1 min-h-[180px] max-h-[221px] flex flex-col overflow-y-auto">
+            <div className="text-[#215273] font-semibold text-base mb-2">PO quantities by companies</div>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={buyerRanking} layout="vertical" margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+                <CartesianGrid stroke="#EAEAEA" horizontal={false} />
+                <XAxis type="number" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 12 }} hide />
+                <YAxis dataKey="buyer" type="category" stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 12 }} width={90} />
+                <Tooltip formatter={(v) => v} />
+                <Bar dataKey="quantity" fill="#C4E7FF" radius={[0, 4, 4, 0]} barSize={16} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </div>
   );

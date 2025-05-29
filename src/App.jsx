@@ -141,10 +141,10 @@ const App = () => {
         {printing && (
           <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[9999]">
             <div className="bg-white px-8 py-6 rounded-xl shadow text-[#215273] text-lg font-semibold">Generating PDF...</div>
-          </div>
+      </div>
         )}
       </main>
-    </div>
+      </div>
   );
 };
 
