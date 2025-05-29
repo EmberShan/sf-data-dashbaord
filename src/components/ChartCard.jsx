@@ -132,17 +132,32 @@ function getChartData({
   }));
 }
 
-const ChartCard = () => {
-  const [chartType, setChartType] = useState("bar");
-  const [viewBy, setViewBy] = useState("year");
-  const [dateRangeType, setDateRangeType] = useState("year");
-  const [dateRangeValue, setDateRangeValue] = useState(1);
-  const [customStart, setCustomStart] = useState(
-    new Date(new Date().getFullYear(), 0, 1)
-  );
-  const [customEnd, setCustomEnd] = useState(new Date());
-  const [useCustom, setUseCustom] = useState(false);
-  const [chartTitle, setChartTitle] = useState("Chart Title");
+const ChartCard = ({
+  chartType,
+  setChartType,
+  viewBy,
+  setViewBy,
+  dateRangeType,
+  setDateRangeType,
+  dateRangeValue,
+  setDateRangeValue,
+  customStart,
+  setCustomStart,
+  customEnd,
+  setCustomEnd,
+  useCustom,
+  setUseCustom,
+  chartTitle,
+  setChartTitle,
+  expanded,
+  onToggleExpand,
+  onDuplicate,
+  onMoveUp,
+  onMoveDown,
+  onDelete,
+  isFirst,
+  isLast,
+}) => {
   const [editingTitle, setEditingTitle] = useState(false);
 
   const chartData = getChartData({
@@ -182,115 +197,116 @@ const ChartCard = () => {
           )}
         </div>
         <div className="flex items-center gap-6 ml-4">
-          <div className="hover:opacity-80 cursor-pointer">
+          <div className="hover:opacity-80 cursor-pointer" onClick={onToggleExpand}>
             <img src="/filter.svg" alt="Filter" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
           </div>
-          <div className="hover:opacity-80 cursor-pointer">
+          <div className={`hover:opacity-80 cursor-pointer${isFirst ? ' opacity-30 pointer-events-none' : ''}`} onClick={isFirst ? undefined : onMoveUp}>
             <img src="/up.svg" alt="Move Up" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
           </div>
-          <div className="hover:opacity-80 cursor-pointer">
+          <div className={`hover:opacity-80 cursor-pointer${isLast ? ' opacity-30 pointer-events-none' : ''}`} onClick={isLast ? undefined : onMoveDown}>
             <img src="/down.svg" alt="Move Down" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
           </div>
-          <div className="hover:opacity-80 cursor-pointer">
+          <div className="hover:opacity-80 cursor-pointer" onClick={onDuplicate}>
             <img src="/duplicate.svg" alt="Duplicate" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
           </div>
-          <div className="hover:opacity-80 cursor-pointer">
+          <div className="hover:opacity-80 cursor-pointer" onClick={onDelete}>
             <img src="/delete.svg" alt="Delete" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
           </div>
         </div>
       </div>
-      {/* Chart Settings */}
-      <div className="bg-[#F9FBFC] rounded-lg p-4 mb-8 flex flex-col gap-4">
-        <div className="flex flex-wrap gap-6 items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-caption font-medium">Type of chart</span>
-            <select
-              className="bg-[#E6F0F8] text-[#3398FF] rounded px-2 py-1"
-              value={chartType}
-              onChange={(e) => setChartType(e.target.value)}
-            >
-              {chartTypes.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-caption font-medium">Date Range</span>
-          <label className="flex items-center gap-1">
-            <input
-              type="radio"
-              checked={!useCustom}
-              onChange={() => setUseCustom(false)}
-            />
-            <span>Past</span>
-            <input
-              type="number"
-              min={1}
-              className={`w-12 px-1 py-0.5 rounded border border-[#E6F0F8] ${!useCustom ? 'bg-[#E6F0F8] text-[#3398FF]' : 'bg-white text-[#A3B3BF]'}`}
-              value={dateRangeValue}
-              onChange={(e) => setDateRangeValue(Number(e.target.value))}
-              onFocus={() => setUseCustom(false)}
-            />
-            <select
-              className={`rounded px-2 py-1 border-none ${!useCustom ? 'bg-[#E6F0F8] text-[#3398FF]' : 'bg-white text-[#A3B3BF]'}`}
-              value={dateRangeType}
-              onChange={(e) => setDateRangeType(e.target.value)}
-              onFocus={() => setUseCustom(false)}
-            >
-              {dateRangeTypes.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-1 ml-4">
-            <input
-              type="radio"
-              checked={useCustom}
-              onChange={() => setUseCustom(true)}
-            />
-            <span>Custom dates</span>
-            <input
-              type="date"
-              className={`px-1 py-0.5 rounded border border-[#E6F0F8] ${useCustom ? 'bg-[#E6F0F8] text-[#3398FF]' : 'bg-white text-[#A3B3BF]'}`}
-              value={customStart.toISOString().slice(0, 10)}
-              onChange={(e) => setCustomStart(new Date(e.target.value))}
-              onFocus={() => setUseCustom(true)}
-            />
-            <span>to</span>
-            <input
-              type="date"
-              className={`px-1 py-0.5 rounded border border-[#E6F0F8] ${useCustom ? 'bg-[#E6F0F8] text-[#3398FF]' : 'bg-white text-[#A3B3BF]'}`}
-              value={customEnd.toISOString().slice(0, 10)}
-              onChange={(e) => setCustomEnd(new Date(e.target.value))}
-              onFocus={() => setUseCustom(true)}
-            />
-          </label>
-        </div>
-        <div className="flex flex-wrap gap-6 items-center">
-          <span className="text-caption font-medium">View by</span>
-          <div className="flex gap-2 flex-wrap">
-            {viewByOptions.map((opt) => (
-              <div
-                key={opt.value}
-                className={`hover:cursor-pointer px-3 py-1 rounded font-medium border ${
-                  viewBy === opt.value
-                    ? "bg-[#E6F0F8] text-[#3398FF] border-[#C3E7FE]"
-                    : "bg-white text-caption border-[#E6F0F8]"
-                }`}
-                onClick={() => setViewBy(opt.value)}
-                type="button"
+      {expanded && (
+        <div className="bg-[#F9FBFC] rounded-lg p-4 mb-8 flex flex-col gap-4">
+          <div className="flex flex-wrap gap-6 items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-caption font-medium">Type of chart</span>
+              <select
+                className="bg-[#E6F0F8] text-[#3398FF] rounded px-2 py-1"
+                value={chartType}
+                onChange={(e) => setChartType(e.target.value)}
               >
-                {opt.label}
-              </div>
-            ))}
+                {chartTypes.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-caption font-medium">Date Range</span>
+            <label className="flex items-center gap-1">
+              <input
+                type="radio"
+                checked={!useCustom}
+                onChange={() => setUseCustom(false)}
+              />
+              <span>Past</span>
+              <input
+                type="number"
+                min={1}
+                className={`w-12 px-1 py-0.5 rounded border border-[#E6F0F8] ${!useCustom ? 'bg-[#E6F0F8] text-[#3398FF]' : 'bg-white text-[#A3B3BF]'}`}
+                value={dateRangeValue}
+                onChange={(e) => setDateRangeValue(Number(e.target.value))}
+                onFocus={() => setUseCustom(false)}
+              />
+              <select
+                className={`rounded px-2 py-1 border-none ${!useCustom ? 'bg-[#E6F0F8] text-[#3398FF]' : 'bg-white text-[#A3B3BF]'}`}
+                value={dateRangeType}
+                onChange={(e) => setDateRangeType(e.target.value)}
+                onFocus={() => setUseCustom(false)}
+              >
+                {dateRangeTypes.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-1 ml-4">
+              <input
+                type="radio"
+                checked={useCustom}
+                onChange={() => setUseCustom(true)}
+              />
+              <span>Custom dates</span>
+              <input
+                type="date"
+                className={`px-1 py-0.5 rounded border border-[#E6F0F8] ${useCustom ? 'bg-[#E6F0F8] text-[#3398FF]' : 'bg-white text-[#A3B3BF]'}`}
+                value={customStart.toISOString().slice(0, 10)}
+                onChange={(e) => setCustomStart(new Date(e.target.value))}
+                onFocus={() => setUseCustom(true)}
+              />
+              <span>to</span>
+              <input
+                type="date"
+                className={`px-1 py-0.5 rounded border border-[#E6F0F8] ${useCustom ? 'bg-[#E6F0F8] text-[#3398FF]' : 'bg-white text-[#A3B3BF]'}`}
+                value={customEnd.toISOString().slice(0, 10)}
+                onChange={(e) => setCustomEnd(new Date(e.target.value))}
+                onFocus={() => setUseCustom(true)}
+              />
+            </label>
+          </div>
+          <div className="flex flex-wrap gap-6 items-center">
+            <span className="text-caption font-medium">View by</span>
+            <div className="flex gap-2 flex-wrap">
+              {viewByOptions.map((opt) => (
+                <div
+                  key={opt.value}
+                  className={`hover:cursor-pointer px-3 py-1 rounded font-medium border ${
+                    viewBy === opt.value
+                      ? "bg-[#E6F0F8] text-[#3398FF] border-[#C3E7FE]"
+                      : "bg-white text-caption border-[#E6F0F8]"
+                  }`}
+                  onClick={() => setViewBy(opt.value)}
+                  type="button"
+                >
+                  {opt.label}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       {/* Chart */}
       <div style={{ width: "100%", height: "350px" }}>
         <ResponsiveContainer width="100%" height="100%">
