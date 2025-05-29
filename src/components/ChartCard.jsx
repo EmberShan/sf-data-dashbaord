@@ -218,13 +218,20 @@ const ChartCard = ({
   isFirst,
   isLast,
 }) => {
+  // Add new state for main chart controls
+  const [mainChartTitle, setMainChartTitle] = useState(chartTitle);
+  const [editingMainChartTitle, setEditingMainChartTitle] = useState(false);
+  const [mainChartType, setMainChartType] = useState(chartType);
+  const [mainChartViewBy, setMainChartViewBy] = useState("quantity"); // PO Quantities, cost, margin, price
+  const [mainChartCategory, setMainChartCategory] = useState("season"); // season, line, color, fabric, type
+
   const [editingTitle, setEditingTitle] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalProducts, setModalProducts] = useState([]);
   const [modalLabel, setModalLabel] = useState("");
 
   const chartData = getChartData({
-    viewBy,
+    viewBy: mainChartCategory,
     dateRangeType: useCustom ? "custom" : dateRangeType,
     dateRangeValue,
     customStart,
@@ -364,28 +371,12 @@ const ChartCard = ({
       {/* Chart settings summary */}
       <div className="mb-6 text-sm font-medium" style={{ color: '#215273' }}>
         {useCustom
-          ? `Custom: ${customStart.toISOString().slice(0, 10)} to ${customEnd.toISOString().slice(0, 10)}, View by ${viewByOptions.find(v => v.value === viewBy)?.label || viewBy}`
-          : `Past ${dateRangeValue} ${dateRangeTypes.find(d => d.value === dateRangeType)?.label}${dateRangeValue > 1 ? 's' : ''}, View by ${viewByOptions.find(v => v.value === viewBy)?.label || viewBy}`
+          ? `Custom: ${customStart.toISOString().slice(0, 10)} to ${customEnd.toISOString().slice(0, 10)}`
+          : `Past ${dateRangeValue} ${dateRangeTypes.find(d => d.value === dateRangeType)?.label}${dateRangeValue > 1 ? 's' : ''}`
         }
       </div>
       {expanded && (
         <div className="bg-[#F9FBFC] rounded-lg p-4 mb-8 flex flex-col gap-4">
-          <div className="flex flex-wrap gap-6 items-center">
-            <div className="flex items-center gap-2">
-              <span className="text-caption font-medium">Type of chart</span>
-              <select
-                className="bg-[#E6F0F8] text-[#3398FF] rounded px-2 py-1"
-                value={chartType}
-                onChange={(e) => setChartType(e.target.value)}
-              >
-                {chartTypes.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
           <div className="flex items-center gap-2">
             <span className="text-caption font-medium">Date Range</span>
             <label className="flex items-center gap-1">
@@ -440,32 +431,22 @@ const ChartCard = ({
               />
             </label>
           </div>
-          <div className="flex flex-wrap gap-6 items-center">
-            <span className="text-caption font-medium">View by</span>
-            <div className="flex gap-2 flex-wrap">
-              {viewByOptions.map((opt) => (
-                <div
-                  key={opt.value}
-                  className={`hover:cursor-pointer px-3 py-1 rounded font-medium border ${
-                    viewBy === opt.value
-                      ? "bg-[#E6F0F8] text-[#3398FF] border-[#C3E7FE]"
-                      : "bg-white text-caption border-[#E6F0F8]"
-                  }`}
-                  onClick={() => setViewBy(opt.value)}
-                  type="button"
-                >
-                  {opt.label}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
       {/* Chart */}
       <div className="w-full flex flex-row">
         {/* Left: Main chart */}
         <MainChart
-          chartType={chartType}
+          chartType={mainChartType}
+          setChartType={setMainChartType}
+          chartTitle={mainChartTitle}
+          setChartTitle={setMainChartTitle}
+          editingTitle={editingMainChartTitle}
+          setEditingTitle={setEditingMainChartTitle}
+          viewBy={mainChartViewBy}
+          setViewBy={setMainChartViewBy}
+          categoryBy={mainChartCategory}
+          setCategoryBy={setMainChartCategory}
           chartData={chartData}
           handleBarOrDotClick={handleBarOrDotClick}
           activeTooltipIndex={activeTooltipIndex}
