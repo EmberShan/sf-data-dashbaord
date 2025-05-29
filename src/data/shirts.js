@@ -13,6 +13,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["Blue"],
               "fabric": "Organic Cotton",
               "price": 25.00,
+              "cost": 18.75,
               "date_added": "2025-01-15",
               "available_sizes": ["XS", "S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/blue.png"
@@ -24,6 +25,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["White"],
               "fabric": "Premium Cotton",
               "price": 28.00,
+              "cost": 22.12,
               "date_added": "2025-01-15",
               "available_sizes": ["XS", "S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/white.png"
@@ -41,6 +43,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["Dark Gray"],
               "fabric": "Cotton Blend",
               "price": 32.00,
+              "cost": 25.6,
               "date_added": "2025-01-20",
               "available_sizes": ["S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/dark gray.png"
@@ -63,6 +66,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["Blue", "White"],
               "fabric": "Lightweight Cotton",
               "price": 29.00,
+              "cost": 20.88,
               "date_added": "2025-03-01",
               "available_sizes": ["XS", "S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/blue+white.png"
@@ -80,6 +84,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["Pink"],
               "fabric": "Breathable Cotton",
               "price": 27.00,
+              "cost": 19.71,
               "date_added": "2025-03-15",
               "available_sizes": ["XS", "S", "M", "L"],
               "image_url": "public/cloth/shirt/pink.png"
@@ -102,6 +107,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["Dark Gray"],
               "fabric": "Heavyweight Cotton",
               "price": 34.00,
+              "cost": 25.5,
               "date_added": "2025-06-01",
               "available_sizes": ["S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/dark gray-1.png"
@@ -119,6 +125,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["White", "Gray"],
               "fabric": "Cotton Blend",
               "price": 31.00,
+              "cost": 23.56,
               "date_added": "2025-06-15",
               "available_sizes": ["XS", "S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/white+gray.png"
@@ -141,6 +148,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["Blue"],
               "fabric": "Thermal Cotton",
               "price": 36.00,
+              "cost": 27.72,
               "date_added": "2025-09-01",
               "available_sizes": ["S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/blue-1.png"
@@ -158,6 +166,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["Pink"],
               "fabric": "Premium Cotton",
               "price": 33.00,
+              "cost": 24.09,
               "date_added": "2025-09-15",
               "available_sizes": ["XS", "S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/pink-1.png"
@@ -180,6 +189,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["White"],
               "fabric": "Premium Cotton",
               "price": 39.00,
+              "cost": 29.25,
               "date_added": "2025-11-01",
               "available_sizes": ["S", "M", "L"],
               "image_url": "public/cloth/shirt/white-1.png"
@@ -197,6 +207,7 @@ const shirtData = {"clothing_inventory": [
               "color": ["Blue", "White"],
               "fabric": "Organic Cotton",
               "price": 35.00,
+              "cost": 24.5,
               "date_added": "2025-11-15",
               "available_sizes": ["XS", "S", "M", "L", "XL"],
               "image_url": "public/cloth/shirt/blue+white-1.png"
