@@ -353,7 +353,7 @@ function FilterRow({
   return (
     <div className="flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px]">
       <span
-        className="text-[#215273] font-medium w-[135px] text-left"
+        className="text-[#215273] font-medium w-[90px] text-left"
         style={{ color: "#215273" }}
       >
         {label}
@@ -442,7 +442,7 @@ function FilterRow({
         )}
       </div>
       {/* Chips for selected values */}
-      <div className="w-full flex flex-wrap gap-2 ml-2">
+      <div className="flex flex-wrap gap-2 ml-2">
         {selectedValues.length > 0 &&
           selectedValues.length < options.length &&
           selectedValues.map((val) => (
@@ -466,17 +466,17 @@ function FilterRow({
           ))}
       </div>
       <span
-        className="ml-auto cursor-pointer text-[#A3B3BF] hover:text-[#215273] text-2xl"
+        className="ml-auto cursor-pointer text-[#A3B3BF] hover:text-[#215273]"
         tabIndex={0}
         aria-label={`Remove ${label} filter`}
         onClick={() => {
           setSelectedValues([]);
-          setActiveFilters(activeFilters.filter((f) => f !== label));
+          setActiveFilters(activeFilters.filter(f => f !== label));
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             setSelectedValues([]);
-            setActiveFilters(activeFilters.filter((f) => f !== label));
+            setActiveFilters(activeFilters.filter(f => f !== label));
           }
         }}
       >
@@ -651,7 +651,7 @@ const ChartCard = ({
           allFilteredProducts.push({
             ...product,
             season: seasonObj.season,
-            product_line: line.name,
+            product_line: line.name
           });
         }
       });
@@ -874,174 +874,55 @@ const ChartCard = ({
           </span>
 
           {/* Active Filters */}
-          {selectedColors.length > 0 &&
-            selectedColors.length < getAllColors().length && (
-              <span className="flex items-center gap-1">
-                <img src="/filter.svg" alt="" className="w-4 h-4" />
-                {selectedColors.length === 1
-                  ? selectedColors[0]
-                  : `${selectedColors.length} colors`}
-              </span>
-            )}
-          {selectedFabrics.length > 0 &&
-            selectedFabrics.length < getAllFabrics().length && (
-              <span className="flex items-center gap-1">
-                <img src="/filter.svg" alt="" className="w-4 h-4" />
-                {selectedFabrics.length === 1
-                  ? selectedFabrics[0]
-                  : `${selectedFabrics.length} fabrics`}
-              </span>
-            )}
-          {selectedSeasons.length > 0 &&
-            selectedSeasons.length < getAllSeasons().length && (
-              <span className="flex items-center gap-1">
-                <img src="/filter.svg" alt="" className="w-4 h-4" />
-                {selectedSeasons.length === 1
-                  ? selectedSeasons[0]
-                  : `${selectedSeasons.length} seasons`}
-              </span>
-            )}
-          {selectedLines.length > 0 &&
-            selectedLines.length < getAllLines().length && (
-              <span className="flex items-center gap-1">
-                <img src="/filter.svg" alt="" className="w-4 h-4" />
-                {selectedLines.length === 1
-                  ? selectedLines[0]
-                  : `${selectedLines.length} lines`}
-              </span>
-            )}
-          {selectedBuyers.length > 0 &&
-            selectedBuyers.length < getAllBuyers().length && (
-              <span className="flex items-center gap-1">
-                <img src="/filter.svg" alt="" className="w-4 h-4" />
-                {selectedBuyers.length === 1
-                  ? selectedBuyers[0]
-                  : `${selectedBuyers.length} buyers`}
-              </span>
-            )}
+          {selectedColors.length > 0 && selectedColors.length < getAllColors().length && (
+            <span className="flex items-center gap-1">
+              <img src="/filter.svg" alt="" className="w-4 h-4" />
+              {selectedColors.length === 1 
+                ? selectedColors[0]
+                : `${selectedColors.length} colors`}
+            </span>
+          )}
+          {selectedFabrics.length > 0 && selectedFabrics.length < getAllFabrics().length && (
+            <span className="flex items-center gap-1">
+              <img src="/filter.svg" alt="" className="w-4 h-4" />
+              {selectedFabrics.length === 1 
+                ? selectedFabrics[0]
+                : `${selectedFabrics.length} fabrics`}
+            </span>
+          )}
+          {selectedSeasons.length > 0 && selectedSeasons.length < getAllSeasons().length && (
+            <span className="flex items-center gap-1">
+              <img src="/filter.svg" alt="" className="w-4 h-4" />
+              {selectedSeasons.length === 1 
+                ? selectedSeasons[0]
+                : `${selectedSeasons.length} seasons`}
+            </span>
+          )}
+          {selectedLines.length > 0 && selectedLines.length < getAllLines().length && (
+            <span className="flex items-center gap-1">
+              <img src="/filter.svg" alt="" className="w-4 h-4" />
+              {selectedLines.length === 1 
+                ? selectedLines[0]
+                : `${selectedLines.length} lines`}
+            </span>
+          )}
+          {selectedBuyers.length > 0 && selectedBuyers.length < getAllBuyers().length && (
+            <span className="flex items-center gap-1">
+              <img src="/filter.svg" alt="" className="w-4 h-4" />
+              {selectedBuyers.length === 1 
+                ? selectedBuyers[0]
+                : `${selectedBuyers.length} buyers`}
+            </span>
+          )}
         </div>
       </div>
 
       {/* Filter row */}
       <div className="mb-6">
-        {/* Top controls row: Add Filter, Filter, Clear All Filters */}
-        <div className="flex items-center gap-2 border border-[#E9EDEF] p-4 relative w-full">
-          <img src="/add-blue.svg" alt="Filter" className="w-4 h-4" />
-          <span
-            className="text-[#3398FF] font-medium cursor-pointer select-none"
-            onClick={() => {
-              setAddFilterDropdownOpen((v) => !v);
-              if (!expanded) onToggleExpand();
-            }}
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                setAddFilterDropdownOpen((v) => !v);
-                if (!expanded) onToggleExpand();
-              }
-            }}
-          >
-            Add filter
-          </span>
-          {addFilterDropdownOpen && (
-            <div
-              ref={addFilterRef}
-              className="absolute left-0 top-full w-48 bg-white border border-[#E9EDEF] rounded shadow-lg z-50"
-            >
-              <div
-                className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273] font-semibold border-b border-[#E9EDEF]"
-                onClick={() => {
-                  const all = ["Color", "Fabric", "Season", "Line", "Buyer"];
-                  setActiveFilters([
-                    ...activeFilters,
-                    ...all.filter((f) => !activeFilters.includes(f)),
-                  ]);
-                  setAddFilterDropdownOpen(false);
-                }}
-              >
-                All filters
-              </div>
-              {["Color", "Fabric", "Season", "Line", "Buyer"]
-                .filter((f) => !activeFilters.includes(f))
-                .map((f) => (
-                  <div
-                    key={f}
-                    className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273]"
-                    onClick={() => {
-                      setActiveFilters([...activeFilters, f]);
-                      setAddFilterDropdownOpen(false);
-                    }}
-                  >
-                    {f}
-                  </div>
-                ))}
-              {activeFilters.length === 5 && (
-                <div className="px-4 py-2 text-[#A3B3BF]">
-                  All filters added
-                </div>
-              )}
-            </div>
-          )}
-          {/* Filter button */}
-          <span
-            className="flex items-center gap-1 ml-4 text-[#3398FF] font-medium cursor-pointer select-none"
-            onClick={onToggleExpand}
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") onToggleExpand();
-            }}
-          >
-            <img src="/filter-blue.svg" alt="Filter" className="w-5 h-5 mr-1" />
-            {expanded
-              ? `Hide filter (${
-                  [
-                    selectedColors.length > 0 &&
-                      selectedColors.length < getAllColors().length,
-                    selectedFabrics.length > 0 &&
-                      selectedFabrics.length < getAllFabrics().length,
-                    selectedSeasons.length > 0 &&
-                      selectedSeasons.length < getAllSeasons().length,
-                    selectedLines.length > 0 &&
-                      selectedLines.length < getAllLines().length,
-                    selectedBuyers.length > 0 &&
-                      selectedBuyers.length < getAllBuyers().length,
-                  ].filter(Boolean).length
-                })`
-              : `Show filter (${
-                  [
-                    selectedColors.length > 0 &&
-                      selectedColors.length < getAllColors().length,
-                    selectedFabrics.length > 0 &&
-                      selectedFabrics.length < getAllFabrics().length,
-                    selectedSeasons.length > 0 &&
-                      selectedSeasons.length < getAllSeasons().length,
-                    selectedLines.length > 0 &&
-                      selectedLines.length < getAllLines().length,
-                    selectedBuyers.length > 0 &&
-                      selectedBuyers.length < getAllBuyers().length,
-                  ].filter(Boolean).length
-                })`}
-          </span>
-          <div className="ml-auto">
-            <span
-              className="text-[#A3B3BF] font-medium cursor-pointer select-none hover:text-[#3398FF]"
-              onClick={clearAllFilters}
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") clearAllFilters();
-              }}
-            >
-              Clear all filters
-            </span>
-          </div>
-        </div>
-
-        {expanded && (
-          <div className="rounded-lg flex flex-col">
-            {/* Date range row (always present) */}
-            <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px]">
+        {/* Date range row (always present) */}
+        <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px]">
               <span
-                className="text-[#215273] font-medium w-[100px] text-left"
+                className="text-[#215273] font-medium w-[90px] text-left"
                 style={{ color: "#215273" }}
               >
                 Date Range
@@ -1059,7 +940,7 @@ const ChartCard = ({
                     }}
                     style={{ minWidth: 120 }}
                   />
-                  <div
+                  <div 
                     className="absolute right-0 top-0 bottom-0 w-7 cursor-pointer"
                     onClick={(e) => {
                       e.currentTarget.previousSibling.showPicker();
@@ -1087,7 +968,7 @@ const ChartCard = ({
                     }}
                     style={{ minWidth: 120 }}
                   />
-                  <div
+                  <div 
                     className="absolute right-0 top-0 bottom-0 w-7 cursor-pointer"
                     onClick={(e) => {
                       e.currentTarget.previousSibling.showPicker();
@@ -1150,6 +1031,99 @@ const ChartCard = ({
                 })}
               </div>
             </div>
+        {/* Top controls row: Add Filter, Filter, Clear All Filters */}
+        <div className="flex items-center gap-2 border border-[#E9EDEF] p-4 relative w-full mb-[-1px]">
+          <img src="/add-blue.svg" alt="Filter" className="w-4 h-4" />
+          <span
+            className="text-[#3398FF] font-medium cursor-pointer select-none"
+            onClick={() => { setAddFilterDropdownOpen((v) => !v); if (!expanded) onToggleExpand(); }}
+            tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setAddFilterDropdownOpen((v) => !v); if (!expanded) onToggleExpand(); } }}
+          >
+            Add filter
+          </span>
+          {addFilterDropdownOpen && (
+            <div
+              ref={addFilterRef}
+              className="absolute left-0 top-full w-48 bg-white border border-[#E9EDEF] rounded shadow-lg z-50"
+            >
+              <div
+                className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273] font-semibold border-b border-[#E9EDEF]"
+                onClick={() => {
+                  const all = ["Color", "Fabric", "Season", "Line", "Buyer"];
+                  setActiveFilters([
+                    ...activeFilters,
+                    ...all.filter((f) => !activeFilters.includes(f)),
+                  ]);
+                  setAddFilterDropdownOpen(false);
+                }}
+              >
+                All filters
+              </div>
+              {["Color", "Fabric", "Season", "Line", "Buyer"]
+                .filter((f) => !activeFilters.includes(f))
+                .map((f) => (
+                  <div
+                    key={f}
+                    className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273]"
+                    onClick={() => {
+                      setActiveFilters([...activeFilters, f]);
+                      setAddFilterDropdownOpen(false);
+                    }}
+                  >
+                    {f}
+                  </div>
+                ))}
+              {activeFilters.length === 5 && (
+                <div className="px-4 py-2 text-[#A3B3BF]">
+                  All filters added
+                </div>
+              )}
+            </div>
+          )}
+          {/* Filter button */}
+          <span
+            className="flex items-center gap-1 ml-4 text-[#3398FF] font-medium cursor-pointer select-none"
+            onClick={onToggleExpand}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") onToggleExpand();
+            }}
+          >
+            <img src="/filter-blue.svg" alt="Filter" className="w-5 h-5 mr-1" />
+            {expanded 
+              ? `Hide filter (${[
+                  selectedColors.length > 0 && selectedColors.length < getAllColors().length,
+                  selectedFabrics.length > 0 && selectedFabrics.length < getAllFabrics().length,
+                  selectedSeasons.length > 0 && selectedSeasons.length < getAllSeasons().length,
+                  selectedLines.length > 0 && selectedLines.length < getAllLines().length,
+                  selectedBuyers.length > 0 && selectedBuyers.length < getAllBuyers().length
+                ].filter(Boolean).length})` 
+              : `Show filter (${[
+                  selectedColors.length > 0 && selectedColors.length < getAllColors().length,
+                  selectedFabrics.length > 0 && selectedFabrics.length < getAllFabrics().length,
+                  selectedSeasons.length > 0 && selectedSeasons.length < getAllSeasons().length,
+                  selectedLines.length > 0 && selectedLines.length < getAllLines().length,
+                  selectedBuyers.length > 0 && selectedBuyers.length < getAllBuyers().length
+                ].filter(Boolean).length})`}
+          </span>
+          <div className="ml-auto">
+            <span
+              className="text-[#A3B3BF] font-medium cursor-pointer select-none hover:text-[#3398FF]"
+              onClick={clearAllFilters}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") clearAllFilters();
+              }}
+            >
+              Clear all filters
+            </span>
+          </div>
+        </div>
+
+        {expanded && (
+          <div className="rounded-lg flex flex-col">
+            
             {/* Conditionally render filter rows */}
             {activeFilters.includes("Color") && (
               <FilterRow
