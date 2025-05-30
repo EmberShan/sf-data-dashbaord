@@ -99,7 +99,7 @@ const App = () => {
         onCreateChart={() => setCharts(prev => [defaultChartSettings(), ...prev])}
         onPrintPage={handlePrintPage}
       />
-      <main className="w-full pt-32 mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="w-full pt-16 mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {charts.length === 0 ? (
           <div className="text-center text-[#A3B3BF]">No charts. Add one!</div>
         ) : (

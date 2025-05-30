@@ -299,6 +299,8 @@ function FilterRow({
   selectedValues,
   setSelectedValues,
   colorDot = false,
+  activeFilters,
+  setActiveFilters,
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -351,7 +353,7 @@ function FilterRow({
   return (
     <div className="flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px]">
       <span
-        className="text-[#215273] font-medium w-[90px] text-left"
+        className="text-[#215273] font-medium w-[135px] text-left"
         style={{ color: "#215273" }}
       >
         {label}
@@ -440,7 +442,7 @@ function FilterRow({
         )}
       </div>
       {/* Chips for selected values */}
-      <div className="flex flex-wrap gap-2 ml-2">
+      <div className="w-full flex flex-wrap gap-2 ml-2">
         {selectedValues.length > 0 &&
           selectedValues.length < options.length &&
           selectedValues.map((val) => (
@@ -463,6 +465,23 @@ function FilterRow({
             </span>
           ))}
       </div>
+      <span
+        className="ml-auto cursor-pointer text-[#A3B3BF] hover:text-[#215273] text-2xl"
+        tabIndex={0}
+        aria-label={`Remove ${label} filter`}
+        onClick={() => {
+          setSelectedValues([]);
+          setActiveFilters(activeFilters.filter((f) => f !== label));
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            setSelectedValues([]);
+            setActiveFilters(activeFilters.filter((f) => f !== label));
+          }
+        }}
+      >
+        ×
+      </span>
     </div>
   );
 }
@@ -632,7 +651,7 @@ const ChartCard = ({
           allFilteredProducts.push({
             ...product,
             season: seasonObj.season,
-            product_line: line.name
+            product_line: line.name,
           });
         }
       });
@@ -841,13 +860,66 @@ const ChartCard = ({
       </div>
       {/* Chart settings summary */}
       <div className="mb-6 text-sm font-medium" style={{ color: "#215273" }}>
-        {useCustom
-          ? `Custom: ${customStart.toISOString().slice(0, 10)} to ${customEnd
-              .toISOString()
-              .slice(0, 10)}`
-          : `Past ${dateRangeValue} ${
-              dateRangeTypes.find((d) => d.value === dateRangeType)?.label
-            }${dateRangeValue > 1 ? "s" : ""}`}
+        <div className="flex flex-wrap gap-2 items-center">
+          {/* Date Range */}
+          <span className="flex items-center gap-1">
+            <img src="/calendar.svg" alt="" className="w-4 h-4" />
+            {useCustom
+              ? `${customStart.toISOString().slice(0, 10)} to ${customEnd
+                  .toISOString()
+                  .slice(0, 10)}`
+              : `Past ${dateRangeValue} ${
+                  dateRangeTypes.find((d) => d.value === dateRangeType)?.label
+                }${dateRangeValue > 1 ? "s" : ""}`}
+          </span>
+
+          {/* Active Filters */}
+          {selectedColors.length > 0 &&
+            selectedColors.length < getAllColors().length && (
+              <span className="flex items-center gap-1">
+                <img src="/filter.svg" alt="" className="w-4 h-4" />
+                {selectedColors.length === 1
+                  ? selectedColors[0]
+                  : `${selectedColors.length} colors`}
+              </span>
+            )}
+          {selectedFabrics.length > 0 &&
+            selectedFabrics.length < getAllFabrics().length && (
+              <span className="flex items-center gap-1">
+                <img src="/filter.svg" alt="" className="w-4 h-4" />
+                {selectedFabrics.length === 1
+                  ? selectedFabrics[0]
+                  : `${selectedFabrics.length} fabrics`}
+              </span>
+            )}
+          {selectedSeasons.length > 0 &&
+            selectedSeasons.length < getAllSeasons().length && (
+              <span className="flex items-center gap-1">
+                <img src="/filter.svg" alt="" className="w-4 h-4" />
+                {selectedSeasons.length === 1
+                  ? selectedSeasons[0]
+                  : `${selectedSeasons.length} seasons`}
+              </span>
+            )}
+          {selectedLines.length > 0 &&
+            selectedLines.length < getAllLines().length && (
+              <span className="flex items-center gap-1">
+                <img src="/filter.svg" alt="" className="w-4 h-4" />
+                {selectedLines.length === 1
+                  ? selectedLines[0]
+                  : `${selectedLines.length} lines`}
+              </span>
+            )}
+          {selectedBuyers.length > 0 &&
+            selectedBuyers.length < getAllBuyers().length && (
+              <span className="flex items-center gap-1">
+                <img src="/filter.svg" alt="" className="w-4 h-4" />
+                {selectedBuyers.length === 1
+                  ? selectedBuyers[0]
+                  : `${selectedBuyers.length} buyers`}
+              </span>
+            )}
+        </div>
       </div>
 
       {/* Filter row */}
@@ -857,9 +929,17 @@ const ChartCard = ({
           <img src="/add-blue.svg" alt="Filter" className="w-4 h-4" />
           <span
             className="text-[#3398FF] font-medium cursor-pointer select-none"
-            onClick={() => { setAddFilterDropdownOpen((v) => !v); if (!expanded) onToggleExpand(); }}
+            onClick={() => {
+              setAddFilterDropdownOpen((v) => !v);
+              if (!expanded) onToggleExpand();
+            }}
             tabIndex={0}
-            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setAddFilterDropdownOpen((v) => !v); if (!expanded) onToggleExpand(); } }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setAddFilterDropdownOpen((v) => !v);
+                if (!expanded) onToggleExpand();
+              }
+            }}
           >
             Add filter
           </span>
@@ -912,7 +992,35 @@ const ChartCard = ({
             }}
           >
             <img src="/filter-blue.svg" alt="Filter" className="w-5 h-5 mr-1" />
-            {expanded ? "Hide Filter" : "Show Filter"}
+            {expanded
+              ? `Hide filter (${
+                  [
+                    selectedColors.length > 0 &&
+                      selectedColors.length < getAllColors().length,
+                    selectedFabrics.length > 0 &&
+                      selectedFabrics.length < getAllFabrics().length,
+                    selectedSeasons.length > 0 &&
+                      selectedSeasons.length < getAllSeasons().length,
+                    selectedLines.length > 0 &&
+                      selectedLines.length < getAllLines().length,
+                    selectedBuyers.length > 0 &&
+                      selectedBuyers.length < getAllBuyers().length,
+                  ].filter(Boolean).length
+                })`
+              : `Show filter (${
+                  [
+                    selectedColors.length > 0 &&
+                      selectedColors.length < getAllColors().length,
+                    selectedFabrics.length > 0 &&
+                      selectedFabrics.length < getAllFabrics().length,
+                    selectedSeasons.length > 0 &&
+                      selectedSeasons.length < getAllSeasons().length,
+                    selectedLines.length > 0 &&
+                      selectedLines.length < getAllLines().length,
+                    selectedBuyers.length > 0 &&
+                      selectedBuyers.length < getAllBuyers().length,
+                  ].filter(Boolean).length
+                })`}
           </span>
           <div className="ml-auto">
             <span
@@ -933,7 +1041,7 @@ const ChartCard = ({
             {/* Date range row (always present) */}
             <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px]">
               <span
-                className="text-[#215273] font-medium w-[90px] text-left"
+                className="text-[#215273] font-medium w-[100px] text-left"
                 style={{ color: "#215273" }}
               >
                 Date Range
@@ -951,7 +1059,7 @@ const ChartCard = ({
                     }}
                     style={{ minWidth: 120 }}
                   />
-                  <div 
+                  <div
                     className="absolute right-0 top-0 bottom-0 w-7 cursor-pointer"
                     onClick={(e) => {
                       e.currentTarget.previousSibling.showPicker();
@@ -979,7 +1087,7 @@ const ChartCard = ({
                     }}
                     style={{ minWidth: 120 }}
                   />
-                  <div 
+                  <div
                     className="absolute right-0 top-0 bottom-0 w-7 cursor-pointer"
                     onClick={(e) => {
                       e.currentTarget.previousSibling.showPicker();
@@ -1050,6 +1158,8 @@ const ChartCard = ({
                 selectedValues={selectedColors}
                 setSelectedValues={setSelectedColors}
                 colorDot
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
               />
             )}
             {activeFilters.includes("Fabric") && (
@@ -1058,6 +1168,8 @@ const ChartCard = ({
                 options={getAllFabrics()}
                 selectedValues={selectedFabrics}
                 setSelectedValues={setSelectedFabrics}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
               />
             )}
             {activeFilters.includes("Season") && (
@@ -1066,6 +1178,8 @@ const ChartCard = ({
                 options={getAllSeasons()}
                 selectedValues={selectedSeasons}
                 setSelectedValues={setSelectedSeasons}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
               />
             )}
             {activeFilters.includes("Line") && (
@@ -1074,6 +1188,8 @@ const ChartCard = ({
                 options={getAllLines()}
                 selectedValues={selectedLines}
                 setSelectedValues={setSelectedLines}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
               />
             )}
             {activeFilters.includes("Buyer") && (
@@ -1082,6 +1198,8 @@ const ChartCard = ({
                 options={getAllBuyers()}
                 selectedValues={selectedBuyers}
                 setSelectedValues={setSelectedBuyers}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
               />
             )}
           </div>
