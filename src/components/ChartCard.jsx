@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import {
   BarChart,
   Bar,
@@ -40,19 +40,6 @@ const dateRangeTypes = [
   { value: "year", label: "Year" },
   { value: "quarter", label: "Quarter" },
   { value: "month", label: "Month" },
-];
-
-const FILTER_OPTIONS = [
-  { key: "season", label: "Season/Line" },
-  { key: "color", label: "Color" },
-  { key: "fabric", label: "Fabric" },
-  { key: "status", label: "Status" },
-];
-
-const STATUS_OPTIONS = [
-  { value: "Design ready", label: "Design ready" },
-  { value: "Approved", label: "Approved" },
-  { value: "In production", label: "In production" },
 ];
 
 function filterProductsByDate(products, start, end) {
@@ -231,7 +218,7 @@ const ChartCard = ({
   isFirst,
   isLast,
 }) => {
-  // Add new state for main chart controls
+  // Add new state for main chart controls (move above chartData)
   const [mainChartTitle, setMainChartTitle] = useState(chartTitle);
   const [editingMainChartTitle, setEditingMainChartTitle] = useState(false);
   const [mainChartType, setMainChartType] = useState(chartType);
@@ -243,77 +230,12 @@ const ChartCard = ({
   const [modalProducts, setModalProducts] = useState([]);
   const [modalLabel, setModalLabel] = useState("");
 
-  // Advanced filter state
-  const [activeFilters, setActiveFilters] = useState([]); // e.g. ["season", "color"]
-  const [filterValues, setFilterValues] = useState({
-    season: [],
-    color: [],
-    fabric: [],
-    status: [],
-  });
-  const [addFilterOpen, setAddFilterOpen] = useState(false);
-  const addFilterRef = useRef(null);
-
-  // Helper: get all unique values for dropdowns
-  const allProducts = getAllProducts();
-  const allSeasons = Array.from(new Set(allProducts.map(p => p.season)));
-  const allLines = Array.from(new Set(allProducts.map(p => p.product_line)));
-  const allColors = Array.from(new Set(allProducts.flatMap(p => p.color)));
-  const allFabrics = Array.from(new Set(allProducts.map(p => p.fabric)));
-
-  // --- Filtering logic ---
-  function getFilteredProductsAdv({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, filterValues, activeFilters }) {
-    let products = getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom });
-    // Season/Line
-    if (activeFilters.includes("season") && filterValues.season.length > 0) {
-      products = products.filter(p => filterValues.season.includes(p.season) || filterValues.season.includes(p.product_line));
-    }
-    // Color
-    if (activeFilters.includes("color") && filterValues.color.length > 0) {
-      products = products.filter(p => p.color.some(c => filterValues.color.includes(c)));
-    }
-    // Fabric
-    if (activeFilters.includes("fabric") && filterValues.fabric.length > 0) {
-      products = products.filter(p => filterValues.fabric.includes(p.fabric));
-    }
-    // Status
-    if (activeFilters.includes("status") && filterValues.status.length > 0) {
-      products = products.filter(p => filterValues.status.includes(p.status));
-    }
-    return products;
-  }
-
-  // --- UI handlers ---
-  function handleAddFilter(key) {
-    setActiveFilters(f => [...f, key]);
-    setAddFilterOpen(false);
-  }
-  function handleRemoveFilter(key) {
-    setActiveFilters(f => f.filter(k => k !== key));
-    setFilterValues(v => ({ ...v, [key]: [] }));
-  }
-  function handleSelectValue(key, value) {
-    setFilterValues(v => ({ ...v, [key]: v[key].includes(value) ? v[key].filter(x => x !== value) : [...v[key], value] }));
-  }
-  function handleRemoveChip(key, value) {
-    setFilterValues(v => ({ ...v, [key]: v[key].filter(x => x !== value) }));
-  }
-  function handleClearAllFilters() {
-    setActiveFilters([]);
-    setFilterValues({ season: [], color: [], fabric: [], status: [] });
-  }
-
-  // --- Filtering for charts ---
-  const filteredProducts = getFilteredProductsAdv({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, filterValues, activeFilters });
-
-  // --- Chart data ---
   const chartData = getChartData({
     viewBy: mainChartCategory,
     dateRangeType: useCustom ? "custom" : dateRangeType,
     dateRangeValue,
     customStart,
     customEnd,
-    filteredProducts, // pass for advanced filtering
   });
 
   // --- Margin chart data (now inside component) ---
@@ -323,6 +245,7 @@ const ChartCard = ({
   }));
 
   // --- Pie chart data for average margin (FIXED) ---
+  const filteredProducts = getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom });
   const avgPrice = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.price || 0), 0) / filteredProducts.length : 0;
   const avgCost = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.cost || 0), 0) / filteredProducts.length : 0;
   const pieData = [
@@ -453,290 +376,66 @@ const ChartCard = ({
         }
       </div>
       {expanded && (
-        <div className="bg-white rounded-xl border border-[#E9EDEF] p-0 mb-8 w-full overflow-x-auto">
-          <table className="w-full text-left border-separate border-spacing-0">
-            <thead>
-              <tr className="border-b" style={{ borderColor: '#E9EDEF' }}>
-                <th colSpan={5} className="p-4">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className="flex items-center gap-1 text-[#3398FF] font-medium cursor-pointer select-none"
-                      onClick={() => setExpanded(false)}
-                    >
-                      <img src="/filter.svg" alt="Hide Filters" className="w-5 h-5" />
-                      Hide Filters
-                    </div>
-                    <div
-                      className="flex items-center gap-1 text-[#3398FF] font-medium cursor-pointer select-none relative"
-                      onClick={() => setAddFilterOpen(v => !v)}
-                    >
-                      <img src="/add.svg" alt="Add Filter" className="w-5 h-5" />
-                      Add Filter
-                      {addFilterOpen && (
-                        <div className="absolute left-0 top-8 z-20 bg-white border border-[#E9EDEF] rounded shadow p-2 min-w-[160px]">
-                          {FILTER_OPTIONS.filter(f => !activeFilters.includes(f.key)).map(opt => (
-                            <div key={opt.key} className="px-2 py-1 hover:bg-[#F9FBFC] cursor-pointer rounded" onClick={() => handleAddFilter(opt.key)}>{opt.label}</div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="ml-auto text-[#A3B3BF] font-medium cursor-pointer hover:text-[#3398FF] select-none"
-                      onClick={handleClearAllFilters}
-                    >
-                      Clear all filters
-                    </div>
+        <div className="rounded-lg p-4 mb-8 flex flex-col gap-4 border border-[#E9EDEF] bg-transparent">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="text-caption font-medium">Date Range</span>
+            <input
+              type="date"
+              className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
+              value={customStart.toISOString().slice(0, 10)}
+              onChange={e => {
+                setCustomStart(new Date(e.target.value));
+                setUseCustom(true);
+              }}
+            />
+            <span>to</span>
+            <input
+              type="date"
+              className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
+              value={customEnd.toISOString().slice(0, 10)}
+              onChange={e => {
+                setCustomEnd(new Date(e.target.value));
+                setUseCustom(true);
+              }}
+            />
+            <div className="flex gap-2 ml-2 flex-wrap">
+              {[
+                { label: "Past Month", type: "month", value: 1 },
+                { label: "Past Quarter", type: "quarter", value: 1 },
+                { label: "Past Year", type: "year", value: 1 },
+                { label: "Past 5 Year", type: "year", value: 5 },
+              ].map(opt => {
+                const isActive = !useCustom && dateRangeType === opt.type && dateRangeValue === opt.value;
+                return (
+                  <div
+                    key={opt.label}
+                    className={`px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none transition-colors ${isActive ? 'bg-[#E6F0F8] text-[#3398FF] border-[#C3E7FE]' : 'bg-transparent text-[#215273] hover:bg-[#F5F8FA]'}`}
+                    onClick={() => {
+                      setDateRangeType(opt.type);
+                      setDateRangeValue(opt.value);
+                      setUseCustom(false);
+                      // Set customStart/customEnd to match quick range
+                      const now = new Date();
+                      let start;
+                      if (opt.type === "year") {
+                        start = new Date(now.getFullYear() - opt.value, now.getMonth(), now.getDate());
+                      } else if (opt.type === "quarter") {
+                        start = new Date(now);
+                        start.setMonth(now.getMonth() - 3 * opt.value);
+                      } else if (opt.type === "month") {
+                        start = new Date(now);
+                        start.setMonth(now.getMonth() - opt.value);
+                      }
+                      setCustomStart(start);
+                      setCustomEnd(now);
+                    }}
+                  >
+                    {opt.label}
                   </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Date Range Row */}
-              <tr className="border-b" style={{ borderColor: '#E9EDEF' }}>
-                <td className="p-4 w-[160px] text-[#215273] font-medium">Date Range</td>
-                <td colSpan={4} className="p-4">
-                  <div className="flex flex-wrap gap-2 items-center">
-                    <input
-                      type="date"
-                      className="px-2 py-1 rounded border border-[#E9EDEF] bg-white text-[#215273]"
-                      value={customStart.toISOString().slice(0, 10)}
-                      onChange={e => setCustomStart(new Date(e.target.value))}
-                    />
-                    <span className="mx-1 text-[#A3B3BF]">to</span>
-                    <input
-                      type="date"
-                      className="px-2 py-1 rounded border border-[#E9EDEF] bg-white text-[#215273]"
-                      value={customEnd.toISOString().slice(0, 10)}
-                      onChange={e => setCustomEnd(new Date(e.target.value))}
-                    />
-                    {/* Quick select buttons */}
-                    <div className="flex gap-1 ml-4">
-                      {[
-                        { label: 'Past Month', months: 1 },
-                        { label: 'Past Quarter', months: 3 },
-                        { label: 'Past Year', months: 12 },
-                        { label: 'Past 5 Year', months: 60 },
-                      ].map(opt => (
-                        <span
-                          key={opt.label}
-                          className="px-3 py-1 rounded bg-[#F5F8FA] border border-[#E9EDEF] text-[#3398FF] font-medium cursor-pointer hover:bg-[#E6F0F8] select-none"
-                          onClick={() => {
-                            const now = new Date();
-                            const start = new Date(now);
-                            start.setMonth(now.getMonth() - opt.months);
-                            setCustomStart(start);
-                            setCustomEnd(now);
-                          }}
-                        >
-                          {opt.label}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              {/* Season/Line Row */}
-              {activeFilters.includes('season') && (
-                <tr className="border-b" style={{ borderColor: '#E9EDEF' }}>
-                  <td className="p-4 text-[#215273] font-medium">Season/Line</td>
-                  <td colSpan={4} className="p-4">
-                    <div className="flex flex-wrap gap-2 items-center">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          className="px-2 py-1 rounded border border-[#E9EDEF] bg-white text-[#215273] w-[180px]"
-                          placeholder="Search a season..."
-                          value={filterValues.seasonSearch || ''}
-                          onChange={e => setFilterValues(v => ({ ...v, seasonSearch: e.target.value }))}
-                        />
-                        {/* Dropdown for search results */}
-                        {filterValues.seasonSearch && (
-                          <div className="absolute z-10 mt-1 bg-white border border-[#E9EDEF] rounded shadow p-2 min-w-[180px] max-h-48 overflow-y-auto">
-                            {allSeasons.filter(s => s.toLowerCase().includes(filterValues.seasonSearch.toLowerCase())).map(season => (
-                              <div
-                                key={season}
-                                className="px-2 py-1 hover:bg-[#F9FBFC] cursor-pointer rounded"
-                                onClick={() => {
-                                  setFilterValues(v => ({ ...v, season: [...v.season, { season, lines: [] }], seasonSearch: '' }));
-                                }}
-                              >
-                                {season}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      {/* Chips for selected seasons/lines */}
-                      {filterValues.season.map((s, idx) => (
-                        <div key={s.season} className="flex items-center bg-[#E6F0F8] text-[#3398FF] rounded-full px-3 py-1 mr-1">
-                          <span
-                            className="cursor-pointer font-medium"
-                            onClick={() => setFilterValues(v => ({ ...v, season: v.season.map((ss, i) => i === idx ? { ...ss, showLines: !ss.showLines } : ss) }))}
-                          >
-                            {s.season}
-                            {s.lines && s.lines.length > 0 && '/' + s.lines.join('/')}
-                          </span>
-                          <span
-                            className="ml-2 text-[#A3B3BF] cursor-pointer hover:text-[#3398FF]"
-                            onClick={() => setFilterValues(v => ({ ...v, season: v.season.filter((_, i) => i !== idx) }))}
-                          >
-                            &times;
-                          </span>
-                          {/* Dropdown for lines under this season */}
-                          {s.showLines && (
-                            <div className="absolute z-20 mt-8 bg-white border border-[#E9EDEF] rounded shadow p-2 min-w-[180px]">
-                              <div className="px-2 py-1 border-b border-[#E9EDEF]">
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={s.lines.length === allLines.filter(l => l.startsWith(s.season)).length}
-                                    onChange={e => {
-                                      setFilterValues(v => ({
-                                        ...v,
-                                        season: v.season.map((ss, i) => i === idx ? {
-                                          ...ss,
-                                          lines: e.target.checked ? allLines.filter(l => l.startsWith(s.season)) : []
-                                        } : ss)
-                                      }));
-                                    }}
-                                  />
-                                  All lines
-                                </label>
-                              </div>
-                              {allLines.filter(l => l.startsWith(s.season)).map(line => (
-                                <div key={line} className="px-2 py-1 hover:bg-[#F9FBFC] cursor-pointer rounded flex items-center gap-2">
-                                  <input
-                                    type="checkbox"
-                                    checked={s.lines.includes(line)}
-                                    onChange={() => {
-                                      setFilterValues(v => ({
-                                        ...v,
-                                        season: v.season.map((ss, i) => i === idx ? {
-                                          ...ss,
-                                          lines: ss.lines.includes(line) ? ss.lines.filter(l => l !== line) : [...ss.lines, line]
-                                        } : ss)
-                                      }));
-                                    }}
-                                  />
-                                  <span>{line.replace(s.season + '/', '')}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              )}
-              {/* Color Row */}
-              {activeFilters.includes('color') && (
-                <tr className="border-b" style={{ borderColor: '#E9EDEF' }}>
-                  <td className="p-4 text-[#215273] font-medium">Color</td>
-                  <td colSpan={4} className="p-4">
-                    <div className="flex flex-wrap gap-2 items-center">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          className="px-2 py-1 rounded border border-[#E9EDEF] bg-white text-[#215273] w-[180px]"
-                          placeholder="Search a color..."
-                          value={filterValues.colorSearch || ''}
-                          onChange={e => setFilterValues(v => ({ ...v, colorSearch: e.target.value }))}
-                        />
-                        {filterValues.colorSearch && (
-                          <div className="absolute z-10 mt-1 bg-white border border-[#E9EDEF] rounded shadow p-2 min-w-[180px] max-h-48 overflow-y-auto">
-                            {allColors.filter(c => c.toLowerCase().includes(filterValues.colorSearch.toLowerCase())).map(color => (
-                              <div
-                                key={color}
-                                className="px-2 py-1 hover:bg-[#F9FBFC] cursor-pointer rounded"
-                                onClick={() => setFilterValues(v => ({ ...v, color: [...v.color, color], colorSearch: '' }))}
-                              >
-                                {color}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      {filterValues.color.map((color, idx) => (
-                        <div key={color} className="flex items-center bg-[#E6F0F8] text-[#3398FF] rounded-full px-3 py-1 mr-1">
-                          <span>{color}</span>
-                          <span
-                            className="ml-2 text-[#A3B3BF] cursor-pointer hover:text-[#3398FF]"
-                            onClick={() => setFilterValues(v => ({ ...v, color: v.color.filter((_, i) => i !== idx) }))}
-                          >
-                            &times;
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              )}
-              {/* Fabric Row */}
-              {activeFilters.includes('fabric') && (
-                <tr className="border-b" style={{ borderColor: '#E9EDEF' }}>
-                  <td className="p-4 text-[#215273] font-medium">Fabric</td>
-                  <td colSpan={4} className="p-4">
-                    <div className="flex flex-wrap gap-2 items-center">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          className="px-2 py-1 rounded border border-[#E9EDEF] bg-white text-[#215273] w-[180px]"
-                          placeholder="Search a fabric..."
-                          value={filterValues.fabricSearch || ''}
-                          onChange={e => setFilterValues(v => ({ ...v, fabricSearch: e.target.value }))}
-                        />
-                        {filterValues.fabricSearch && (
-                          <div className="absolute z-10 mt-1 bg-white border border-[#E9EDEF] rounded shadow p-2 min-w-[180px] max-h-48 overflow-y-auto">
-                            {allFabrics.filter(f => f.toLowerCase().includes(filterValues.fabricSearch.toLowerCase())).map(fabric => (
-                              <div
-                                key={fabric}
-                                className="px-2 py-1 hover:bg-[#F9FBFC] cursor-pointer rounded"
-                                onClick={() => setFilterValues(v => ({ ...v, fabric: [...v.fabric, fabric], fabricSearch: '' }))}
-                              >
-                                {fabric}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      {filterValues.fabric.map((fabric, idx) => (
-                        <div key={fabric} className="flex items-center bg-[#E6F0F8] text-[#3398FF] rounded-full px-3 py-1 mr-1">
-                          <span>{fabric}</span>
-                          <span
-                            className="ml-2 text-[#A3B3BF] cursor-pointer hover:text-[#3398FF]"
-                            onClick={() => setFilterValues(v => ({ ...v, fabric: v.fabric.filter((_, i) => i !== idx) }))}
-                          >
-                            &times;
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              )}
-              {/* Status Row */}
-              {activeFilters.includes('status') && (
-                <tr className="border-b" style={{ borderColor: '#E9EDEF' }}>
-                  <td className="p-4 text-[#215273] font-medium">Status</td>
-                  <td colSpan={4} className="p-4">
-                    <div className="flex flex-wrap gap-4 items-center">
-                      {STATUS_OPTIONS.map(opt => (
-                        <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filterValues.status.includes(opt.value)}
-                            onChange={() => handleSelectValue('status', opt.value)}
-                          />
-                          <span>{opt.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
       {/* Chart */}
