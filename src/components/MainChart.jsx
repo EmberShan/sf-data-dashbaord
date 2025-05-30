@@ -45,6 +45,7 @@ const MainChart = ({
   handleBarOrDotClick,
   activeTooltipIndex,
   setActiveTooltipIndex,
+  chartHeight = 550,
 }) => {
   // Compute yKey for chart
   let yKey = viewBy;
@@ -69,7 +70,7 @@ const MainChart = ({
   return (
     <div
       className="flex-1 min-w-0 bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 mr-0 lg:mr-2 mb-4 lg:mb-0 flex flex-col justify-center"
-      style={{ height: "450px" }}
+      style={{ height: chartHeight }}
     >
       {/* Editable title */}
       <div className="text-[#215273] font-semibold text-lg flex-1 min-w-[180px] relative">

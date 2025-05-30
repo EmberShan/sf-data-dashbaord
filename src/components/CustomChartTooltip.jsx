@@ -8,7 +8,7 @@ const CustomChartTooltip = ({ active, payload, label, yKey = 'quantity' }) => {
       <div className="bg-white p-4 rounded shadow border border-[#DDE9F3] min-w-[220px]">
         <div className="text-[#215273] mb-1 font-semibold">{label}</div>
 
-        <div className="text-xs mb-2">Click to view products in detail</div>
+        <div className="text-xs mb-2 text-[#215273]">Click to view products in detail</div>
         <div className="flex gap-2 mb-1">
           {topProducts.map((prod, idx) => (
             <img

@@ -600,6 +600,22 @@ const ChartCard = ({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [addFilterDropdownOpen]);
 
+  function clearAllFilters() {
+    setActiveFilters([]);
+    setSelectedColors([]);
+    setSelectedFabrics([]);
+    setSelectedSeasons([]);
+    setSelectedLines([]);
+    setSelectedBuyers([]);
+    setDateRangeType('year');
+    setDateRangeValue(1);
+    setUseCustom(false);
+    const now = new Date();
+    const start = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+    setCustomStart(start);
+    setCustomEnd(now);
+  }
+
   return (
     <div
       className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto"
@@ -701,6 +717,17 @@ const ChartCard = ({
                 )}
               </div>
             )}
+            {/* Clear all filters button */}
+            <div className="ml-auto">
+              <span
+                className="text-[#A3B3BF] font-medium cursor-pointer select-none hover:text-[#3398FF]"
+                onClick={clearAllFilters}
+                tabIndex={0}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') clearAllFilters(); }}
+              >
+                Clear all filters
+              </span>
+            </div>
           </div>
           {/* Date range row (always present) */}
           <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 mb-[-1px]">
@@ -824,13 +851,14 @@ const ChartCard = ({
           handleBarOrDotClick={handleBarOrDotClick}
           activeTooltipIndex={activeTooltipIndex}
           setActiveTooltipIndex={setActiveTooltipIndex}
+          chartHeight={550}
         />
         {/* Right: Two stacked charts */}
-        <div className="flex flex-col gap-2 w-[320px] min-w-[220px] max-w-[340px] h-[450px] overflow-y-auto">
+        <div className="flex flex-col gap-2 w-[320px] min-w-[220px] max-w-[340px] h-[550px] overflow-y-auto">
           {/* Top: Avg Margin Pie Chart */}
-          <MarginPieChart avgPrice={avgPrice} avgCost={avgCost} pieData={pieData} pieColors={pieColors} />
+          <MarginPieChart avgPrice={avgPrice} avgCost={avgCost} pieData={pieData} pieColors={pieColors} height={200} />
           {/* Bottom: Buyer ranking */}
-          <BuyerRankingChart buyerRanking={buyerRanking} />
+          <BuyerRankingChart buyerRanking={buyerRanking} height={341} />
         </div>
       </div>
     </div>

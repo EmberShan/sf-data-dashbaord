@@ -1,9 +1,9 @@
 import React from "react";
 import { PieChart, Pie, Cell } from "recharts";
 
-const MarginPieChart = ({ avgPrice, avgCost, pieData, pieColors }) => (
-  <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex-1 min-h-[180px] max-h-[221px] flex flex-col">
-    <div className="text-[#215273] font-semibold text-base mb-2">Average Margin</div>
+const MarginPieChart = ({ avgPrice, avgCost, pieData, pieColors, height = 220 }) => (
+  <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex-1" style={{ minHeight: height, maxHeight: height }}>
+    <div className="text-[#215273] font-semibold text-base">Average Margin</div>
     <div className="flex flex-row items-center h-full">
       <div className="flex-shrink-0 flex items-center justify-center" style={{ width: 100, height: 100 }}>
         <PieChart width={100} height={100}>
