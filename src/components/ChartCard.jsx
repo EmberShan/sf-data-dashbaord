@@ -65,10 +65,11 @@ function getAllProducts() {
   return allProducts;
 }
 
-function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom }) {
+function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors }) {
   const allProducts = getAllProducts();
+  let filtered = [];
   if (useCustom) {
-    return filterProductsByDate(allProducts, customStart, customEnd);
+    filtered = filterProductsByDate(allProducts, customStart, customEnd);
   } else {
     const now = new Date();
     let start;
@@ -81,8 +82,13 @@ function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, custo
       start = new Date(now);
       start.setMonth(now.getMonth() - dateRangeValue);
     }
-    return filterProductsByDate(allProducts, start, now);
+    filtered = filterProductsByDate(allProducts, start, now);
   }
+  // Color filter
+  if (selectedColors && selectedColors.length > 0) {
+    filtered = filtered.filter(p => Array.isArray(p.color) ? p.color.some(c => selectedColors.includes(c)) : selectedColors.includes(p.color));
+  }
+  return filtered;
 }
 
 function getChartData({
@@ -91,6 +97,7 @@ function getChartData({
   dateRangeValue,
   customStart,
   customEnd,
+  selectedColors,
 }) {
   let allProducts = [];
   shirtData.clothing_inventory.forEach((seasonObj) => {
@@ -129,6 +136,10 @@ function getChartData({
       start.setMonth(now.getMonth() - dateRangeValue);
     }
     filteredProducts = filterProductsByDate(allProducts, start, now);
+  }
+  // Color filter
+  if (selectedColors && selectedColors.length > 0) {
+    filteredProducts = filteredProducts.filter(p => Array.isArray(p.color) ? p.color.some(c => selectedColors.includes(c)) : selectedColors.includes(p.color));
   }
 
   // Group by viewBy, with special handling for color
@@ -385,6 +396,7 @@ const ChartCard = ({
     dateRangeValue,
     customStart,
     customEnd,
+    selectedColors,
   });
 
   // --- Margin chart data (now inside component) ---
@@ -394,7 +406,7 @@ const ChartCard = ({
   }));
 
   // --- Pie chart data for average margin (FIXED) ---
-  const filteredProducts = getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom });
+  const filteredProducts = getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors });
   const avgPrice = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.price || 0), 0) / filteredProducts.length : 0;
   const avgCost = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.cost || 0), 0) / filteredProducts.length : 0;
   const pieData = [
@@ -427,7 +439,12 @@ const ChartCard = ({
           }
           inRange = date >= start && date <= now;
         }
-        if (inRange) {
+        // Color filter
+        let colorMatch = true;
+        if (selectedColors && selectedColors.length > 0) {
+          colorMatch = Array.isArray(product.color) ? product.color.some(c => selectedColors.includes(c)) : selectedColors.includes(product.color);
+        }
+        if (inRange && colorMatch) {
           allFilteredProducts.push(product);
         }
       });
