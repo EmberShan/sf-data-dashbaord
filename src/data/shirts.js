@@ -37,8 +37,8 @@ const shirtData = {"clothing_inventory": [
           "name": "Beach Collection",
           "id": "BC-SUM25",
           "products": [
-            {"product_id": "TS004-SUM25", "name": "Ocean Breeze Tee", "type": "shirt", "color": ["Blue", "White"], "fabric": "Lightweight Cotton", "price": 29.00, "cost": 20.88, "quantity_sold": 98, "date_added": "2025-03-01", "available_sizes": ["XS", "S", "M", "L", "XL"], "image_url": "/cloth/shirt/blue+white.png", "buyer": "Walmart"},
-            {"product_id": "TS023-SUM25", "name": "Blue+White Modern Tee", "type": "shirt", "color": ["Blue", "White"], "fabric": "Lightweight Cotton", "price": 30.00, "cost": 21.50, "quantity_sold": 90, "date_added": "2025-03-05", "available_sizes": ["XS", "S", "M", "L", "XL"], "image_url": "/cloth/shirt/blue+white-1.png", "buyer": "Macy's"}
+            {"product_id": "TS004-SUM25", "name": "Ocean Breeze Tee", "type": "shirt", "color": ["Blue", "White"], "fabric": "light Cotton", "price": 29.00, "cost": 20.88, "quantity_sold": 98, "date_added": "2025-03-01", "available_sizes": ["XS", "S", "M", "L", "XL"], "image_url": "/cloth/shirt/blue+white.png", "buyer": "Walmart"},
+            {"product_id": "TS023-SUM25", "name": "Blue+White Modern Tee", "type": "shirt", "color": ["Blue", "White"], "fabric": "light Cotton", "price": 30.00, "cost": 21.50, "quantity_sold": 90, "date_added": "2025-03-05", "available_sizes": ["XS", "S", "M", "L", "XL"], "image_url": "/cloth/shirt/blue+white-1.png", "buyer": "Macy's"}
           ]
         },
         {

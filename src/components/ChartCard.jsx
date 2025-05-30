@@ -212,7 +212,7 @@ function getChartData({
       selectedBuyers.includes(p.buyer)
     );
   }
-  // Group by viewBy, with special handling for color
+  // Group by viewBy, with special handling for color and fabric
   let groups = {};
   if (viewBy === "color") {
     filteredProducts.forEach((p) => {
@@ -220,6 +220,18 @@ function getChartData({
         if (!groups[color]) groups[color] = [];
         groups[color].push(p);
       });
+    });
+  } else if (viewBy === "fabric") {
+    filteredProducts.forEach((p) => {
+      if (Array.isArray(p.fabric)) {
+        p.fabric.forEach((fabric) => {
+          if (!groups[fabric]) groups[fabric] = [];
+          groups[fabric].push(p);
+        });
+      } else if (p.fabric) {
+        if (!groups[p.fabric]) groups[p.fabric] = [];
+        groups[p.fabric].push(p);
+      }
     });
   } else {
     const groupKey =
@@ -237,8 +249,6 @@ function getChartData({
             ).getFullYear()}`
         : viewBy === "line"
         ? (p) => p.product_line
-        : viewBy === "fabric"
-        ? (p) => p.fabric
         : viewBy === "type"
         ? (p) => p.type
         : (p) => p.season;
@@ -746,7 +756,7 @@ const ChartCard = ({
                 <div className="relative w-full">
                   <input
                     type="date"
-                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none pr-7"
+                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
                     value={customStart.toISOString().slice(0, 10)}
                     onChange={(e) => {
                       setCustomStart(new Date(e.target.value));
@@ -760,12 +770,6 @@ const ChartCard = ({
                       e.currentTarget.previousSibling.showPicker();
                     }}
                   />
-                  <img
-                    src="/calendar.svg"
-                    alt="Calendar"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none"
-                    style={{ color: "#A3B3BF" }}
-                  />
                 </div>
               </div>
               <span style={{ color: "#215273" }}>to</span>
@@ -774,7 +778,7 @@ const ChartCard = ({
                 <div className="relative w-full">
                   <input
                     type="date"
-                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none pr-7"
+                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
                     value={customEnd.toISOString().slice(0, 10)}
                     onChange={(e) => {
                       setCustomEnd(new Date(e.target.value));
@@ -787,12 +791,6 @@ const ChartCard = ({
                     onClick={(e) => {
                       e.currentTarget.previousSibling.showPicker();
                     }}
-                  />
-                  <img
-                    src="/calendar.svg"
-                    alt="Calendar"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none"
-                    style={{ color: "#A3B3BF" }}
                   />
                 </div>
               </div>

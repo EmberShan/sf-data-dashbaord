@@ -42,7 +42,7 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
           </div>
 
           {/* Center: Tabs */}
-          <nav className="flex space-x-8 text-sm font-medium ml-64">
+          <nav className="flex space-x-8 text-sm font-medium absolute left-1/2 -translate-x-1/2">
             <div
               onClick={() => handleTabClick('analytics')}
               className={`cursor-pointer pb-1 ${
