@@ -18,6 +18,7 @@ import React, { useState, useRef, useEffect } from "react";
 // - colorDot: boolean - Whether to show color dots (for color filter)
 // - activeFilters: string[] - Array of active filter types
 // - setActiveFilters: function - Callback to update active filters
+// - isLast: boolean - Whether this is the last filter row
 
 const FilterRow = ({
   label,
@@ -27,6 +28,7 @@ const FilterRow = ({
   colorDot = false,
   activeFilters,
   setActiveFilters,
+  isLast = false,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -77,7 +79,7 @@ const FilterRow = ({
   }
 
   return (
-    <div className="flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px]">
+    <div className={`flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px]${isLast ? ' rounded-b-md' : ''}`}>
       <span
         className="text-[#215273] font-medium w-[120px] text-left"
         style={{ color: "#215273" }}

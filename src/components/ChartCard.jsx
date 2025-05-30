@@ -734,7 +734,7 @@ const ChartCard = ({
       {/* Filter row */}
       <div className="mb-6">
         {/* Date range row (always present) */}
-        <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px]">
+        <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px] rounded-t-md">
               <span
                 className="text-[#215273] font-medium w-[90px] text-left"
                 style={{ color: "#215273" }}
@@ -846,7 +846,9 @@ const ChartCard = ({
               </div>
             </div>
         {/* Top controls row: Add Filter, Filter, Clear All Filters */}
-        <div className="flex items-center gap-2 border border-[#E9EDEF] p-4 relative w-full mb-[-1px]">
+        <div
+          className={`flex items-center gap-2 border border-[#E9EDEF] p-4 relative w-full mb-[-1px]${activeFilters.length === 0 ? ' rounded-b-md' : ''}`}
+        >
           <img src="/add-blue.svg" alt="Filter" className="w-4 h-4" />
           <span
             className="text-[#3398FF] font-medium cursor-pointer select-none"
@@ -966,6 +968,7 @@ const ChartCard = ({
                 colorDot
                 activeFilters={activeFilters}
                 setActiveFilters={setActiveFilters}
+                isLast={activeFilters[activeFilters.length - 1] === "Color"}
               />
             )}
             {activeFilters.includes("Fabric") && (
@@ -976,6 +979,7 @@ const ChartCard = ({
                 setSelectedValues={setSelectedFabrics}
                 activeFilters={activeFilters}
                 setActiveFilters={setActiveFilters}
+                isLast={activeFilters[activeFilters.length - 1] === "Fabric"}
               />
             )}
             {activeFilters.includes("Season") && (
@@ -986,6 +990,7 @@ const ChartCard = ({
                 setSelectedValues={setSelectedSeasons}
                 activeFilters={activeFilters}
                 setActiveFilters={setActiveFilters}
+                isLast={activeFilters[activeFilters.length - 1] === "Season"}
               />
             )}
             {activeFilters.includes("Line") && (
@@ -996,6 +1001,7 @@ const ChartCard = ({
                 setSelectedValues={setSelectedLines}
                 activeFilters={activeFilters}
                 setActiveFilters={setActiveFilters}
+                isLast={activeFilters[activeFilters.length - 1] === "Line"}
               />
             )}
             {activeFilters.includes("Buyer") && (
@@ -1006,6 +1012,7 @@ const ChartCard = ({
                 setSelectedValues={setSelectedBuyers}
                 activeFilters={activeFilters}
                 setActiveFilters={setActiveFilters}
+                isLast={activeFilters[activeFilters.length - 1] === "Buyer"}
               />
             )}
           </div>

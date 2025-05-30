@@ -5,6 +5,7 @@ import { downloadFullPagePDF } from "../utils/pdfGenerator";
 // Top navigation bar for the dashboard, with avatar, tabs, and action buttons.
 const Toolbar = ({ onCreateChart, onPrintPage }) => {
   const [activeTab, setActiveTab] = useState('analytics');
+  const [isLoadingPDF, setIsLoadingPDF] = useState(false);
 
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
@@ -19,9 +20,12 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
 
   const handleDownloadPDF = async () => {
     try {
+      setIsLoadingPDF(true);
       await downloadFullPagePDF();
     } catch (error) {
       console.error('Error downloading PDF:', error);
+    } finally {
+      setIsLoadingPDF(false);
     }
   };
 
@@ -72,24 +76,30 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
           </nav>
 
           {/* Right: Create Chart + Share + Print */}
-          <div className="flex space-x-2">
+          <div className="flex">
             <div
               onClick={onCreateChart}
-              className="px-3 py-1.5 border text-sm rounded border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+              className="px-3 py-1.5 text-sm rounded text-gray-600 hover:text-[#3398FF] cursor-pointer flex items-center gap-2"
             >
-              <img src="/add.svg" alt="Add" className="w-4 h-4" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+              <img src="/add.svg" alt="Add" className="w-6 h-6" />
               Create Chart
             </div>
             <div
               onClick={handleDownloadPDF}
-              className="px-3 py-1.5 text-sm rounded text-gray-600 hover:bg-gray-100 cursor-pointer"
+              className="px-2 py-1.5 text-sm rounded text-gray-600 hover:text-[#3398FF] cursor-pointer flex items-center gap-2 min-w-[180px]"
             >
+              {isLoadingPDF ? (
+                <span className="w-6 h-6 inline-block animate-spin border-2 border-gray-300 border-t-[#3398FF] rounded-full"></span>
+              ) : (
+                <span className="w-6 h-6"> <img src="/download.svg" alt="Download" className='w-full'/></span>
+              )}
               Download Report PDF
             </div>
             <div
             //   onClick={() => alert('Share placeholder')}
-              className="px-3 py-1.5 text-sm rounded text-gray-600 hover:bg-gray-100 cursor-pointer"
+              className="px-3 py-1.5 text-sm rounded text-gray-600 hover:text-[#3398FF] cursor-pointer flex items-center gap-2"
             >
+              <span className="w-6 h-6"> <img src="/share.svg" alt="Download" className='w-full'/></span>
               Share
             </div>
           </div>
