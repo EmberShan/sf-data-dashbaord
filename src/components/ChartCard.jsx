@@ -1,21 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
 import shirtData from "../data/shirts.js";
-import CustomChartTooltip from "./CustomChartTooltip";
-import ProductCard from "./ProductCard";
 import Modal from "./Modal";
 import MainChart from "./MainChart";
 import MarginPieChart from "./MarginPieChart";
@@ -556,17 +540,6 @@ const ChartCard = ({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [addFilterDropdownOpen]);
 
-  // Helper function to check if any filter has selected values
-  const hasSelectedFilters = () => {
-    return (
-      selectedColors.length > 0 ||
-      selectedFabrics.length > 0 ||
-      selectedSeasons.length > 0 ||
-      selectedLines.length > 0 ||
-      selectedBuyers.length > 0
-    );
-  };
-
   // Helper function to check if any filter is not "all selected"
   const hasPartialFilters = () => {
     return (
@@ -600,7 +573,7 @@ const ChartCard = ({
 
   return (
     <div
-      className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto"
+      className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto chart-card"
       style={{ width: "80vw", maxWidth: 1200 }}
     >
       <Modal

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { downloadFullPagePDF } from "../utils/pdfGenerator";
 
 // Toolbar.jsx
 // Top navigation bar for the dashboard, with avatar, tabs, and action buttons.
@@ -13,6 +14,14 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
   const handlePrint = () => {
     if (onPrintPage) {
       onPrintPage();
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      await downloadFullPagePDF();
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
     }
   };
 
@@ -72,7 +81,7 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
               Create Chart
             </div>
             <div
-              onClick={handlePrint}
+              onClick={handleDownloadPDF}
               className="px-3 py-1.5 text-sm rounded text-gray-600 hover:bg-gray-100 cursor-pointer"
             >
               Download Report PDF
