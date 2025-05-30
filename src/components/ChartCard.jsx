@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -192,6 +192,153 @@ function getBuyerRanking(products) {
     .sort((a, b) => b.quantity - a.quantity);
 }
 
+// Helper to get all unique colors from the data
+function getAllColors() {
+  const allProducts = getAllProducts();
+  const colorSet = new Set();
+  allProducts.forEach((p) => {
+    if (Array.isArray(p.color)) {
+      p.color.forEach((c) => colorSet.add(c));
+    } else if (p.color) {
+      colorSet.add(p.color);
+    }
+  });
+  return Array.from(colorSet).sort();
+}
+
+function ColorFilterRow({ selectedColors, setSelectedColors }) {
+  const allColors = getAllColors();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClick);
+    } else {
+      document.removeEventListener("mousedown", handleClick);
+    }
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [dropdownOpen]);
+
+  // Filtered color options
+  const filteredColors = allColors.filter((c) => c.toLowerCase().includes(search.toLowerCase()));
+  const allSelected = selectedColors.length === 0 || selectedColors.length === allColors.length;
+
+  function handleSelectColor(color) {
+    if (selectedColors.includes(color)) {
+      setSelectedColors(selectedColors.filter((c) => c !== color));
+    } else {
+      setSelectedColors([...selectedColors, color]);
+    }
+  }
+  function handleRemoveChip(color) {
+    setSelectedColors(selectedColors.filter((c) => c !== color));
+  }
+  function handleSelectAll() {
+    setSelectedColors([]); // empty means all
+    setDropdownOpen(false);
+  }
+
+  let dropdownText = "all";
+  if (selectedColors.length === 0 || selectedColors.length === allColors.length) {
+    dropdownText = "all";
+  } else if (selectedColors.length === 0) {
+    dropdownText = "none selected";
+  } else {
+    dropdownText = `${selectedColors.length} selected`;
+  }
+
+  return (
+    <div className="flex items-center gap-4 w-full border border-[#E9EDEF] p-4">
+      <span className="text-caption font-medium w-[90px] text-left">Color</span>
+      <div className="relative">
+        <div
+          className="flex items-center gap-2 px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none min-w-[120px] bg-white"
+          tabIndex={0}
+          aria-haspopup="listbox"
+          aria-expanded={dropdownOpen}
+          onClick={() => setDropdownOpen((v) => !v)}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setDropdownOpen((v) => !v); }}
+        >
+          <span>{dropdownText}</span>
+          <span className={`inline-block transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}>▼</span>
+        </div>
+        {dropdownOpen && (
+          <div
+            ref={dropdownRef}
+            className="absolute left-0 z-50 mt-2 w-64 bg-white border border-[#E9EDEF] rounded shadow-lg p-2"
+            style={{ minWidth: 220 }}
+            role="listbox"
+            tabIndex={-1}
+          >
+            <div
+              className={`px-3 py-1 rounded cursor-pointer font-medium text-[#215273] ${allSelected ? 'bg-[#E6F0F8] text-[#3398FF]' : 'hover:bg-[#F5F8FA]'}`}
+              onClick={handleSelectAll}
+              aria-selected={allSelected}
+            >
+              All colors
+            </div>
+            <div className="my-2 border-t border-[#E9EDEF]" />
+            <input
+              type="text"
+              className="w-full px-2 py-1 mb-2 rounded border border-[#E9EDEF] text-[#215273] bg-transparent focus:outline-none"
+              placeholder="Search colors..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              aria-label="Search colors"
+            />
+            <div className="max-h-48 overflow-y-auto">
+              {filteredColors.map((color) => (
+                <div
+                  key={color}
+                  className={`px-3 py-1 rounded cursor-pointer flex items-center gap-2 ${selectedColors.includes(color) ? 'bg-[#E6F0F8] text-[#3398FF]' : 'hover:bg-[#F5F8FA] text-[#215273]'}`}
+                  onClick={() => handleSelectColor(color)}
+                  aria-selected={selectedColors.includes(color)}
+                  role="option"
+                >
+                  <span className="w-3 h-3 rounded-full border border-[#E9EDEF] mr-2" style={{ background: color.toLowerCase() }} />
+                  {color}
+                  {selectedColors.includes(color) && <span className="ml-auto">✓</span>}
+                </div>
+              ))}
+              {filteredColors.length === 0 && (
+                <div className="px-3 py-2 text-[#A3B3BF]">No colors found</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      {/* Chips for selected colors */}
+      <div className="flex flex-wrap gap-2 ml-2">
+        {selectedColors.length > 0 && selectedColors.length < allColors.length && selectedColors.map((color) => (
+          <span
+            key={color}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E6F0F8] text-[#3398FF] text-xs font-medium border border-[#C3E7FE]"
+          >
+            {color}
+            <span
+              className="ml-1 cursor-pointer text-[#A3B3BF] hover:text-[#215273]"
+              tabIndex={0}
+              aria-label={`Remove ${color}`}
+              onClick={() => handleRemoveChip(color)}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleRemoveChip(color); }}
+            >
+              ×
+            </span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const ChartCard = ({
   chartType,
   setChartType,
@@ -229,6 +376,8 @@ const ChartCard = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [modalProducts, setModalProducts] = useState([]);
   const [modalLabel, setModalLabel] = useState("");
+
+  const [selectedColors, setSelectedColors] = useState([]); // empty = all
 
   const chartData = getChartData({
     viewBy: mainChartCategory,
@@ -376,9 +525,9 @@ const ChartCard = ({
         }
       </div>
       {expanded && (
-        <div className="rounded-lg p-4 mb-8 flex flex-col gap-4 border border-[#E9EDEF] bg-transparent">
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="text-caption font-medium">Date Range</span>
+        <div className="rounded-lg mb-6 flex flex-col">
+          <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 mb-[-1px]">
+            <span className="text-caption font-medium w-[90px] text-left">Date Range</span>
             <input
               type="date"
               className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
@@ -436,6 +585,7 @@ const ChartCard = ({
               })}
             </div>
           </div>
+          <ColorFilterRow selectedColors={selectedColors} setSelectedColors={setSelectedColors} />
         </div>
       )}
       {/* Chart */}
