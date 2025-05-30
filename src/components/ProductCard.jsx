@@ -1,5 +1,8 @@
 import React from "react";
 
+// ProductCard.jsx
+// Card component for displaying a single shirt product's image and details.
+
 export default function ProductCard({ product, season, productLine }) {
   return (
     <div className="w-[190px] bg-white border border-[#DDE9F3] rounded-lg p-2 flex flex-col items-center relative">

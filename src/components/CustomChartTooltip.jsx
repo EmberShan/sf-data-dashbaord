@@ -1,5 +1,8 @@
 import React from 'react';
 
+// CustomChartTooltip.jsx
+// Tooltip component for main chart, showing group value, product images, and summary stats for the hovered group.
+
 const yKeyLabels = {
   quantity: 'PO Quantities',
   cost: 'Cost',

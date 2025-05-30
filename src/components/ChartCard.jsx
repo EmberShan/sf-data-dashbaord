@@ -21,6 +21,9 @@ import MainChart from "./MainChart";
 import MarginPieChart from "./MarginPieChart";
 import BuyerRankingChart from "./BuyerRankingChart";
 
+// ChartCard.jsx
+// Main dashboard card component. Manages chart display, filter controls, and filter logic for shirt inventory data visualization.
+
 const chartTypes = [
   { value: "bar", label: "Bar" },
   { value: "line", label: "Line" },
@@ -966,8 +969,8 @@ const ChartCard = ({
                       key={opt.label}
                       className={`px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none transition-colors ${
                         isActive
-                          ? "bg-[#E6F0F8] text-[#3398FF] border-[#C3E7FE]"
-                          : "bg-transparent text-[#215273] hover:bg-[#F5F8FA]"
+                          ? "bg-[#D0ECFF] text-[#3398FF] border-[#C3E7FE]"
+                          : "bg-[#EDF0F2] text-[#215273] hover:bg-[#F5F8FA]"
                       }`}
                       onClick={() => {
                         setDateRangeType(opt.type);

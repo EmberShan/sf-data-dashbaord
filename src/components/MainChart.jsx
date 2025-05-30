@@ -12,6 +12,9 @@ import {
 } from "recharts";
 import CustomChartTooltip from "./CustomChartTooltip";
 
+// MainChart.jsx
+// Renders the main bar/line chart for the dashboard, with dynamic axes and title, based on props and filters.
+
 const chartTypes = [
   { value: "bar", label: "bar" },
   { value: "line", label: "line" },

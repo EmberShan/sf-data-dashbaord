@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+// Toolbar.jsx
+// Top navigation bar for the dashboard, with avatar, tabs, and action buttons.
 const Toolbar = ({ onCreateChart, onPrintPage }) => {
   const [activeTab, setActiveTab] = useState('analytics');
 

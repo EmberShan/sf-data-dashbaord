@@ -1,6 +1,8 @@
 import React from "react";
 import { PieChart, Pie, Cell } from "recharts";
 
+// MarginPieChart.jsx
+// Displays a pie chart visualizing average margin, cost, and price for filtered shirt data.
 const MarginPieChart = ({ avgPrice, avgCost, pieData, pieColors, height = 220 }) => (
   <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex-1" style={{ minHeight: height, maxHeight: height }}>
     <div className="text-[#215273] font-semibold text-base">Average Margin</div>

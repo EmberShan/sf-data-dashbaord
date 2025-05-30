@@ -1,6 +1,9 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
+// BuyerRankingChart.jsx
+// Shows a vertical bar chart of PO quantities by buyer, based on filtered shirt data.
+
 const CustomBuyerTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (

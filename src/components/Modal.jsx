@@ -1,6 +1,8 @@
 import React from 'react';
 import ProductCard from './ProductCard';
 
+// Modal.jsx
+// Modal dialog for displaying detailed product info for a selected chart group.
 const Modal = ({ open, onClose, label, products, viewBy, groupByProductLine }) => {
   if (!open) return null;
   const colorGroup = viewBy === 'color' ? label : null;
