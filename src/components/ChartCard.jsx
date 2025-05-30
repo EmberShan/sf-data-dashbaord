@@ -774,21 +774,6 @@ const ChartCard = ({
         </div>
         <div className="flex items-center gap-6 ml-4">
           <div
-            className="hover:opacity-80 cursor-pointer"
-            onClick={onToggleExpand}
-          >
-            <img
-              src="/filter.svg"
-              alt="Filter"
-              className="w-6 h-6"
-              style={{
-                filter: expanded
-                  ? "invert(62%) sepia(98%) saturate(749%) hue-rotate(176deg) brightness(101%) contrast(101%)" // #3398FF
-                  : "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)", // #A3B3BF
-              }}
-            />
-          </div>
-          <div
             className={`hover:opacity-80 cursor-pointer${
               isFirst ? " opacity-30 pointer-events-none" : ""
             }`}
@@ -865,12 +850,9 @@ const ChartCard = ({
           <img src="/add-blue.svg" alt="Filter" className="w-4 h-4" />
           <span
             className="text-[#3398FF] font-medium cursor-pointer select-none"
-            onClick={() => setAddFilterDropdownOpen((v) => !v)}
+            onClick={() => { setAddFilterDropdownOpen((v) => !v); if (!expanded) onToggleExpand(); }}
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ")
-                setAddFilterDropdownOpen((v) => !v);
-            }}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setAddFilterDropdownOpen((v) => !v); if (!expanded) onToggleExpand(); } }}
           >
             Add filter
           </span>
