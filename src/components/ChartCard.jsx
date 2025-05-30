@@ -368,7 +368,7 @@ function FilterRow({
           }}
           style={{ color: "#A3B3BF" }}
         >
-          <span>{dropdownText}</span>
+          <span className="flex-1">{dropdownText}</span>
           <span
             className={`inline-block transition-transform ${
               dropdownOpen ? "rotate-180" : ""
@@ -609,12 +609,12 @@ const ChartCard = ({
         // Season filter
         let seasonMatch = true;
         if (selectedSeasons && selectedSeasons.length > 0) {
-          seasonMatch = selectedSeasons.includes(product.season);
+          seasonMatch = selectedSeasons.includes(seasonObj.season);
         }
         // Line filter
         let lineMatch = true;
         if (selectedLines && selectedLines.length > 0) {
-          lineMatch = selectedLines.includes(product.product_line);
+          lineMatch = selectedLines.includes(line.name);
         }
         // Buyer filter
         let buyerMatch = true;
@@ -629,7 +629,11 @@ const ChartCard = ({
           lineMatch &&
           buyerMatch
         ) {
-          allFilteredProducts.push(product);
+          allFilteredProducts.push({
+            ...product,
+            season: seasonObj.season,
+            product_line: line.name
+          });
         }
       });
     });
@@ -862,7 +866,7 @@ const ChartCard = ({
           {addFilterDropdownOpen && (
             <div
               ref={addFilterRef}
-              className="absolute left-0 top-full mt-2 w-48 bg-white border border-[#E9EDEF] rounded shadow-lg z-50"
+              className="absolute left-0 top-full w-48 bg-white border border-[#E9EDEF] rounded shadow-lg z-50"
             >
               <div
                 className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273] font-semibold border-b border-[#E9EDEF]"
@@ -934,25 +938,61 @@ const ChartCard = ({
               >
                 Date Range
               </span>
-              <input
-                type="date"
-                className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
-                value={customStart.toISOString().slice(0, 10)}
-                onChange={(e) => {
-                  setCustomStart(new Date(e.target.value));
-                  setUseCustom(true);
-                }}
-              />
+              {/* Start date input with calendar icon */}
+              <div className="relative flex items-center">
+                <div className="relative w-full">
+                  <input
+                    type="date"
+                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none pr-7"
+                    value={customStart.toISOString().slice(0, 10)}
+                    onChange={(e) => {
+                      setCustomStart(new Date(e.target.value));
+                      setUseCustom(true);
+                    }}
+                    style={{ minWidth: 120 }}
+                  />
+                  <div 
+                    className="absolute right-0 top-0 bottom-0 w-7 cursor-pointer"
+                    onClick={(e) => {
+                      e.currentTarget.previousSibling.showPicker();
+                    }}
+                  />
+                  <img
+                    src="/calendar.svg"
+                    alt="Calendar"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none"
+                    style={{ color: "#A3B3BF" }}
+                  />
+                </div>
+              </div>
               <span style={{ color: "#215273" }}>to</span>
-              <input
-                type="date"
-                className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
-                value={customEnd.toISOString().slice(0, 10)}
-                onChange={(e) => {
-                  setCustomEnd(new Date(e.target.value));
-                  setUseCustom(true);
-                }}
-              />
+              {/* End date input with calendar icon */}
+              <div className="relative flex items-center">
+                <div className="relative w-full">
+                  <input
+                    type="date"
+                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none pr-7"
+                    value={customEnd.toISOString().slice(0, 10)}
+                    onChange={(e) => {
+                      setCustomEnd(new Date(e.target.value));
+                      setUseCustom(true);
+                    }}
+                    style={{ minWidth: 120 }}
+                  />
+                  <div 
+                    className="absolute right-0 top-0 bottom-0 w-7 cursor-pointer"
+                    onClick={(e) => {
+                      e.currentTarget.previousSibling.showPicker();
+                    }}
+                  />
+                  <img
+                    src="/calendar.svg"
+                    alt="Calendar"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none"
+                    style={{ color: "#A3B3BF" }}
+                  />
+                </div>
+              </div>
               <div className="flex gap-2 ml-2 flex-wrap">
                 {[
                   { label: "Past Month", type: "month", value: 1 },
@@ -969,8 +1009,8 @@ const ChartCard = ({
                       key={opt.label}
                       className={`px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none transition-colors ${
                         isActive
-                          ? "bg-[#D0ECFF] text-[#3398FF] border-[#C3E7FE]"
-                          : "bg-[#EDF0F2] text-[#215273] hover:bg-[#F5F8FA]"
+                          ? "bg-[#DCF1FF] text-[#3398FF]"
+                          : "bg-[#F4F6F7] text-[#215273] hover:bg-[#F5F8FA]"
                       }`}
                       onClick={() => {
                         setDateRangeType(opt.type);
