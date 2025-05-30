@@ -700,6 +700,16 @@ const ChartCard = ({
                 ref={addFilterRef}
                 className="absolute left-0 top-full mt-2 w-48 bg-white border border-[#E9EDEF] rounded shadow-lg z-50"
               >
+                <div
+                  className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273] font-semibold border-b border-[#E9EDEF]"
+                  onClick={() => {
+                    const all = ["Color", "Fabric", "Season", "Line", "Buyer"];
+                    setActiveFilters([...activeFilters, ...all.filter(f => !activeFilters.includes(f))]);
+                    setAddFilterDropdownOpen(false);
+                  }}
+                >
+                  All filters
+                </div>
                 {["Color", "Fabric", "Season", "Line", "Buyer"].filter(f => !activeFilters.includes(f)).map(f => (
                   <div
                     key={f}
