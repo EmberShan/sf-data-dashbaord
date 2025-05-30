@@ -65,7 +65,7 @@ function getAllProducts() {
   return allProducts;
 }
 
-function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors }) {
+function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors, selectedFabrics, selectedSeasons, selectedLines, selectedBuyers }) {
   const allProducts = getAllProducts();
   let filtered = [];
   if (useCustom) {
@@ -88,6 +88,22 @@ function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, custo
   if (selectedColors && selectedColors.length > 0) {
     filtered = filtered.filter(p => Array.isArray(p.color) ? p.color.some(c => selectedColors.includes(c)) : selectedColors.includes(p.color));
   }
+  // Fabric filter
+  if (selectedFabrics && selectedFabrics.length > 0) {
+    filtered = filtered.filter(p => Array.isArray(p.fabric) ? p.fabric.some(f => selectedFabrics.includes(f)) : selectedFabrics.includes(p.fabric));
+  }
+  // Season filter
+  if (selectedSeasons && selectedSeasons.length > 0) {
+    filtered = filtered.filter(p => selectedSeasons.includes(p.season));
+  }
+  // Line filter
+  if (selectedLines && selectedLines.length > 0) {
+    filtered = filtered.filter(p => selectedLines.includes(p.product_line));
+  }
+  // Buyer filter
+  if (selectedBuyers && selectedBuyers.length > 0) {
+    filtered = filtered.filter(p => selectedBuyers.includes(p.buyer));
+  }
   return filtered;
 }
 
@@ -98,6 +114,10 @@ function getChartData({
   customStart,
   customEnd,
   selectedColors,
+  selectedFabrics,
+  selectedSeasons,
+  selectedLines,
+  selectedBuyers,
 }) {
   let allProducts = [];
   shirtData.clothing_inventory.forEach((seasonObj) => {
@@ -141,7 +161,22 @@ function getChartData({
   if (selectedColors && selectedColors.length > 0) {
     filteredProducts = filteredProducts.filter(p => Array.isArray(p.color) ? p.color.some(c => selectedColors.includes(c)) : selectedColors.includes(p.color));
   }
-
+  // Fabric filter
+  if (selectedFabrics && selectedFabrics.length > 0) {
+    filteredProducts = filteredProducts.filter(p => Array.isArray(p.fabric) ? p.fabric.some(f => selectedFabrics.includes(f)) : selectedFabrics.includes(p.fabric));
+  }
+  // Season filter
+  if (selectedSeasons && selectedSeasons.length > 0) {
+    filteredProducts = filteredProducts.filter(p => selectedSeasons.includes(p.season));
+  }
+  // Line filter
+  if (selectedLines && selectedLines.length > 0) {
+    filteredProducts = filteredProducts.filter(p => selectedLines.includes(p.product_line));
+  }
+  // Buyer filter
+  if (selectedBuyers && selectedBuyers.length > 0) {
+    filteredProducts = filteredProducts.filter(p => selectedBuyers.includes(p.buyer));
+  }
   // Group by viewBy, with special handling for color
   let groups = {};
   if (viewBy === "color") {
@@ -272,7 +307,7 @@ function FilterRow({
 
   return (
     <div className="flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px]">
-      <span className="text-caption font-medium w-[90px] text-left" style={{ color: '#215273' }}>{label}</span>
+      <span className="text-[#215273] font-medium w-[90px] text-left" style={{ color: '#215273' }}>{label}</span>
       <div className="relative">
         <div
           className="flex items-center gap-2 px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none min-w-[120px] bg-white"
@@ -408,6 +443,10 @@ const ChartCard = ({
     customStart,
     customEnd,
     selectedColors,
+    selectedFabrics,
+    selectedSeasons,
+    selectedLines,
+    selectedBuyers,
   });
 
   // --- Margin chart data (now inside component) ---
@@ -417,7 +456,7 @@ const ChartCard = ({
   }));
 
   // --- Pie chart data for average margin (FIXED) ---
-  const filteredProducts = getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors });
+  const filteredProducts = getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors, selectedFabrics, selectedSeasons, selectedLines, selectedBuyers });
   const avgPrice = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.price || 0), 0) / filteredProducts.length : 0;
   const avgCost = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.cost || 0), 0) / filteredProducts.length : 0;
   const pieData = [
@@ -455,7 +494,27 @@ const ChartCard = ({
         if (selectedColors && selectedColors.length > 0) {
           colorMatch = Array.isArray(product.color) ? product.color.some(c => selectedColors.includes(c)) : selectedColors.includes(product.color);
         }
-        if (inRange && colorMatch) {
+        // Fabric filter
+        let fabricMatch = true;
+        if (selectedFabrics && selectedFabrics.length > 0) {
+          fabricMatch = Array.isArray(product.fabric) ? product.fabric.some(f => selectedFabrics.includes(f)) : selectedFabrics.includes(product.fabric);
+        }
+        // Season filter
+        let seasonMatch = true;
+        if (selectedSeasons && selectedSeasons.length > 0) {
+          seasonMatch = selectedSeasons.includes(product.season);
+        }
+        // Line filter
+        let lineMatch = true;
+        if (selectedLines && selectedLines.length > 0) {
+          lineMatch = selectedLines.includes(product.product_line);
+        }
+        // Buyer filter
+        let buyerMatch = true;
+        if (selectedBuyers && selectedBuyers.length > 0) {
+          buyerMatch = selectedBuyers.includes(product.buyer);
+        }
+        if (inRange && colorMatch && fabricMatch && seasonMatch && lineMatch && buyerMatch) {
           allFilteredProducts.push(product);
         }
       });
@@ -645,7 +704,7 @@ const ChartCard = ({
           </div>
           {/* Date range row (always present) */}
           <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 mb-[-1px]">
-            <span className="text-caption font-medium w-[90px] text-left" style={{ color: '#215273' }}>Date Range</span>
+            <span className="text-[#215273] font-medium w-[90px] text-left" style={{ color: '#215273' }}>Date Range</span>
             <input
               type="date"
               className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
@@ -655,7 +714,7 @@ const ChartCard = ({
                 setUseCustom(true);
               }}
             />
-            <span>to</span>
+            <span style={{ color: '#215273' }}>to</span>
             <input
               type="date"
               className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
