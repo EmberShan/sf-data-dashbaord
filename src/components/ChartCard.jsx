@@ -65,7 +65,18 @@ function getAllProducts() {
   return allProducts;
 }
 
-function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors, selectedFabrics, selectedSeasons, selectedLines, selectedBuyers }) {
+function getFilteredProducts({
+  dateRangeType,
+  dateRangeValue,
+  customStart,
+  customEnd,
+  useCustom,
+  selectedColors,
+  selectedFabrics,
+  selectedSeasons,
+  selectedLines,
+  selectedBuyers,
+}) {
   const allProducts = getAllProducts();
   let filtered = [];
   if (useCustom) {
@@ -74,7 +85,11 @@ function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, custo
     const now = new Date();
     let start;
     if (dateRangeType === "year") {
-      start = new Date(now.getFullYear() - dateRangeValue, now.getMonth(), now.getDate());
+      start = new Date(
+        now.getFullYear() - dateRangeValue,
+        now.getMonth(),
+        now.getDate()
+      );
     } else if (dateRangeType === "quarter") {
       start = new Date(now);
       start.setMonth(now.getMonth() - 3 * dateRangeValue);
@@ -86,23 +101,31 @@ function getFilteredProducts({ dateRangeType, dateRangeValue, customStart, custo
   }
   // Color filter
   if (selectedColors && selectedColors.length > 0) {
-    filtered = filtered.filter(p => Array.isArray(p.color) ? p.color.some(c => selectedColors.includes(c)) : selectedColors.includes(p.color));
+    filtered = filtered.filter((p) =>
+      Array.isArray(p.color)
+        ? p.color.some((c) => selectedColors.includes(c))
+        : selectedColors.includes(p.color)
+    );
   }
   // Fabric filter
   if (selectedFabrics && selectedFabrics.length > 0) {
-    filtered = filtered.filter(p => Array.isArray(p.fabric) ? p.fabric.some(f => selectedFabrics.includes(f)) : selectedFabrics.includes(p.fabric));
+    filtered = filtered.filter((p) =>
+      Array.isArray(p.fabric)
+        ? p.fabric.some((f) => selectedFabrics.includes(f))
+        : selectedFabrics.includes(p.fabric)
+    );
   }
   // Season filter
   if (selectedSeasons && selectedSeasons.length > 0) {
-    filtered = filtered.filter(p => selectedSeasons.includes(p.season));
+    filtered = filtered.filter((p) => selectedSeasons.includes(p.season));
   }
   // Line filter
   if (selectedLines && selectedLines.length > 0) {
-    filtered = filtered.filter(p => selectedLines.includes(p.product_line));
+    filtered = filtered.filter((p) => selectedLines.includes(p.product_line));
   }
   // Buyer filter
   if (selectedBuyers && selectedBuyers.length > 0) {
-    filtered = filtered.filter(p => selectedBuyers.includes(p.buyer));
+    filtered = filtered.filter((p) => selectedBuyers.includes(p.buyer));
   }
   return filtered;
 }
@@ -159,23 +182,37 @@ function getChartData({
   }
   // Color filter
   if (selectedColors && selectedColors.length > 0) {
-    filteredProducts = filteredProducts.filter(p => Array.isArray(p.color) ? p.color.some(c => selectedColors.includes(c)) : selectedColors.includes(p.color));
+    filteredProducts = filteredProducts.filter((p) =>
+      Array.isArray(p.color)
+        ? p.color.some((c) => selectedColors.includes(c))
+        : selectedColors.includes(p.color)
+    );
   }
   // Fabric filter
   if (selectedFabrics && selectedFabrics.length > 0) {
-    filteredProducts = filteredProducts.filter(p => Array.isArray(p.fabric) ? p.fabric.some(f => selectedFabrics.includes(f)) : selectedFabrics.includes(p.fabric));
+    filteredProducts = filteredProducts.filter((p) =>
+      Array.isArray(p.fabric)
+        ? p.fabric.some((f) => selectedFabrics.includes(f))
+        : selectedFabrics.includes(p.fabric)
+    );
   }
   // Season filter
   if (selectedSeasons && selectedSeasons.length > 0) {
-    filteredProducts = filteredProducts.filter(p => selectedSeasons.includes(p.season));
+    filteredProducts = filteredProducts.filter((p) =>
+      selectedSeasons.includes(p.season)
+    );
   }
   // Line filter
   if (selectedLines && selectedLines.length > 0) {
-    filteredProducts = filteredProducts.filter(p => selectedLines.includes(p.product_line));
+    filteredProducts = filteredProducts.filter((p) =>
+      selectedLines.includes(p.product_line)
+    );
   }
   // Buyer filter
   if (selectedBuyers && selectedBuyers.length > 0) {
-    filteredProducts = filteredProducts.filter(p => selectedBuyers.includes(p.buyer));
+    filteredProducts = filteredProducts.filter((p) =>
+      selectedBuyers.includes(p.buyer)
+    );
   }
   // Group by viewBy, with special handling for color
   let groups = {};
@@ -192,9 +229,9 @@ function getChartData({
         ? (p) => new Date(p.date_added).getFullYear()
         : viewBy === "quarter"
         ? (p) =>
-            `Q${Math.floor(new Date(p.date_added).getMonth() / 3) + 1} ${new Date(
-              p.date_added
-            ).getFullYear()}`
+            `Q${
+              Math.floor(new Date(p.date_added).getMonth() / 3) + 1
+            } ${new Date(p.date_added).getFullYear()}`
         : viewBy === "month"
         ? (p) =>
             `${new Date(p.date_added).getMonth() + 1}/${new Date(
@@ -278,8 +315,11 @@ function FilterRow({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [dropdownOpen]);
 
-  const filteredOptions = options.filter((o) => o.toLowerCase().includes(search.toLowerCase()));
-  const allSelected = selectedValues.length === 0 || selectedValues.length === options.length;
+  const filteredOptions = options.filter((o) =>
+    o.toLowerCase().includes(search.toLowerCase())
+  );
+  const allSelected =
+    selectedValues.length === 0 || selectedValues.length === options.length;
 
   function handleSelectValue(val) {
     if (selectedValues.includes(val)) {
@@ -307,7 +347,12 @@ function FilterRow({
 
   return (
     <div className="flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px]">
-      <span className="text-[#215273] font-medium w-[90px] text-left" style={{ color: '#215273' }}>{label}</span>
+      <span
+        className="text-[#215273] font-medium w-[90px] text-left"
+        style={{ color: "#215273" }}
+      >
+        {label}
+      </span>
       <div className="relative">
         <div
           className="flex items-center gap-2 px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none min-w-[120px] bg-white"
@@ -315,11 +360,19 @@ function FilterRow({
           aria-haspopup="listbox"
           aria-expanded={dropdownOpen}
           onClick={() => setDropdownOpen((v) => !v)}
-          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setDropdownOpen((v) => !v); }}
-          style={{ color: '#A3B3BF' }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") setDropdownOpen((v) => !v);
+          }}
+          style={{ color: "#A3B3BF" }}
         >
           <span>{dropdownText}</span>
-          <span className={`inline-block transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}>▼</span>
+          <span
+            className={`inline-block transition-transform ${
+              dropdownOpen ? "rotate-180" : ""
+            }`}
+          >
+            ▼
+          </span>
         </div>
         {dropdownOpen && (
           <div
@@ -330,7 +383,11 @@ function FilterRow({
             tabIndex={-1}
           >
             <div
-              className={`px-3 py-1 rounded cursor-pointer font-medium text-[#215273] ${allSelected ? 'bg-[#E6F0F8] text-[#3398FF]' : 'hover:bg-[#F5F8FA]'}`}
+              className={`px-3 py-1 rounded cursor-pointer font-medium text-[#215273] ${
+                allSelected
+                  ? "bg-[#E6F0F8] text-[#3398FF]"
+                  : "hover:bg-[#F5F8FA]"
+              }`}
               onClick={handleSelectAll}
               aria-selected={allSelected}
             >
@@ -342,25 +399,38 @@ function FilterRow({
               className="w-full px-2 py-1 mb-2 rounded border border-[#E9EDEF] text-[#215273] bg-transparent focus:outline-none"
               placeholder={`Search ${label.toLowerCase()}...`}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               aria-label={`Search ${label.toLowerCase()}`}
             />
             <div className="max-h-48 overflow-y-auto">
               {filteredOptions.map((val) => (
                 <div
                   key={val}
-                  className={`px-3 py-1 rounded cursor-pointer flex items-center gap-2 ${selectedValues.includes(val) ? 'bg-[#E6F0F8] text-[#3398FF]' : 'hover:bg-[#F5F8FA] text-[#215273]'}`}
+                  className={`px-3 py-1 rounded cursor-pointer flex items-center gap-2 ${
+                    selectedValues.includes(val)
+                      ? "bg-[#E6F0F8] text-[#3398FF]"
+                      : "hover:bg-[#F5F8FA] text-[#215273]"
+                  }`}
                   onClick={() => handleSelectValue(val)}
                   aria-selected={selectedValues.includes(val)}
                   role="option"
                 >
-                  {colorDot && <span className="w-3 h-3 rounded-full border border-[#E9EDEF] mr-2" style={{ background: val.toLowerCase() }} />}
+                  {colorDot && (
+                    <span
+                      className="w-3 h-3 rounded-full border border-[#E9EDEF] mr-2"
+                      style={{ background: val.toLowerCase() }}
+                    />
+                  )}
                   {val}
-                  {selectedValues.includes(val) && <span className="ml-auto">✓</span>}
+                  {selectedValues.includes(val) && (
+                    <span className="ml-auto">✓</span>
+                  )}
                 </div>
               ))}
               {filteredOptions.length === 0 && (
-                <div className="px-3 py-2 text-[#A3B3BF]">No {label.toLowerCase()} found</div>
+                <div className="px-3 py-2 text-[#A3B3BF]">
+                  No {label.toLowerCase()} found
+                </div>
               )}
             </div>
           </div>
@@ -368,23 +438,27 @@ function FilterRow({
       </div>
       {/* Chips for selected values */}
       <div className="flex flex-wrap gap-2 ml-2">
-        {selectedValues.length > 0 && selectedValues.length < options.length && selectedValues.map((val) => (
-          <span
-            key={val}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E6F0F8] text-[#3398FF] text-xs font-medium border border-[#C3E7FE]"
-          >
-            {val}
+        {selectedValues.length > 0 &&
+          selectedValues.length < options.length &&
+          selectedValues.map((val) => (
             <span
-              className="ml-1 cursor-pointer text-[#A3B3BF] hover:text-[#215273]"
-              tabIndex={0}
-              aria-label={`Remove ${val}`}
-              onClick={() => handleRemoveChip(val)}
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleRemoveChip(val); }}
+              key={val}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E6F0F8] text-[#3398FF] text-xs font-medium border border-[#C3E7FE]"
             >
-              ×
+              {val}
+              <span
+                className="ml-1 cursor-pointer text-[#A3B3BF] hover:text-[#215273]"
+                tabIndex={0}
+                aria-label={`Remove ${val}`}
+                onClick={() => handleRemoveChip(val)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") handleRemoveChip(val);
+                }}
+              >
+                ×
+              </span>
             </span>
-          </span>
-        ))}
+          ))}
       </div>
     </div>
   );
@@ -452,13 +526,35 @@ const ChartCard = ({
   // --- Margin chart data (now inside component) ---
   const marginChartData = chartData.map((d) => ({
     x: d.x,
-    margin: d.avgPrice && d.avgCost ? Number(((d.avgPrice - d.avgCost) / d.avgPrice * 100).toFixed(1)) : 0,
+    margin:
+      d.avgPrice && d.avgCost
+        ? Number((((d.avgPrice - d.avgCost) / d.avgPrice) * 100).toFixed(1))
+        : 0,
   }));
 
   // --- Pie chart data for average margin (FIXED) ---
-  const filteredProducts = getFilteredProducts({ dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors, selectedFabrics, selectedSeasons, selectedLines, selectedBuyers });
-  const avgPrice = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.price || 0), 0) / filteredProducts.length : 0;
-  const avgCost = filteredProducts.length > 0 ? filteredProducts.reduce((sum, p) => sum + (p.cost || 0), 0) / filteredProducts.length : 0;
+  const filteredProducts = getFilteredProducts({
+    dateRangeType,
+    dateRangeValue,
+    customStart,
+    customEnd,
+    useCustom,
+    selectedColors,
+    selectedFabrics,
+    selectedSeasons,
+    selectedLines,
+    selectedBuyers,
+  });
+  const avgPrice =
+    filteredProducts.length > 0
+      ? filteredProducts.reduce((sum, p) => sum + (p.price || 0), 0) /
+        filteredProducts.length
+      : 0;
+  const avgCost =
+    filteredProducts.length > 0
+      ? filteredProducts.reduce((sum, p) => sum + (p.cost || 0), 0) /
+        filteredProducts.length
+      : 0;
   const pieData = [
     { name: "avg cost", value: avgCost },
     { name: "margin", value: Math.max(avgPrice - avgCost, 0) },
@@ -479,7 +575,11 @@ const ChartCard = ({
           const now = new Date();
           let start;
           if (dateRangeType === "year") {
-            start = new Date(now.getFullYear() - dateRangeValue, now.getMonth(), now.getDate());
+            start = new Date(
+              now.getFullYear() - dateRangeValue,
+              now.getMonth(),
+              now.getDate()
+            );
           } else if (dateRangeType === "quarter") {
             start = new Date(now);
             start.setMonth(now.getMonth() - 3 * dateRangeValue);
@@ -492,12 +592,16 @@ const ChartCard = ({
         // Color filter
         let colorMatch = true;
         if (selectedColors && selectedColors.length > 0) {
-          colorMatch = Array.isArray(product.color) ? product.color.some(c => selectedColors.includes(c)) : selectedColors.includes(product.color);
+          colorMatch = Array.isArray(product.color)
+            ? product.color.some((c) => selectedColors.includes(c))
+            : selectedColors.includes(product.color);
         }
         // Fabric filter
         let fabricMatch = true;
         if (selectedFabrics && selectedFabrics.length > 0) {
-          fabricMatch = Array.isArray(product.fabric) ? product.fabric.some(f => selectedFabrics.includes(f)) : selectedFabrics.includes(product.fabric);
+          fabricMatch = Array.isArray(product.fabric)
+            ? product.fabric.some((f) => selectedFabrics.includes(f))
+            : selectedFabrics.includes(product.fabric);
         }
         // Season filter
         let seasonMatch = true;
@@ -514,7 +618,14 @@ const ChartCard = ({
         if (selectedBuyers && selectedBuyers.length > 0) {
           buyerMatch = selectedBuyers.includes(product.buyer);
         }
-        if (inRange && colorMatch && fabricMatch && seasonMatch && lineMatch && buyerMatch) {
+        if (
+          inRange &&
+          colorMatch &&
+          fabricMatch &&
+          seasonMatch &&
+          lineMatch &&
+          buyerMatch
+        ) {
           allFilteredProducts.push(product);
         }
       });
@@ -607,11 +718,15 @@ const ChartCard = ({
     setSelectedSeasons([]);
     setSelectedLines([]);
     setSelectedBuyers([]);
-    setDateRangeType('year');
+    setDateRangeType("year");
     setDateRangeValue(1);
     setUseCustom(false);
     const now = new Date();
-    const start = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+    const start = new Date(
+      now.getFullYear() - 1,
+      now.getMonth(),
+      now.getDate()
+    );
     setCustomStart(start);
     setCustomEnd(now);
   }
@@ -621,7 +736,14 @@ const ChartCard = ({
       className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto"
       style={{ width: "80vw", maxWidth: 1200 }}
     >
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} label={modalLabel} products={modalProducts} viewBy={viewBy} groupByProductLine={groupByProductLine} />
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        label={modalLabel}
+        products={modalProducts}
+        viewBy={viewBy}
+        groupByProductLine={groupByProductLine}
+      />
       <div className="flex items-center justify-between mb-2">
         <div className="text-[#215273] font-semibold text-lg w-1/2 relative">
           {editingTitle ? (
@@ -630,9 +752,11 @@ const ChartCard = ({
                 className="font-semibold text-lg text-[#215273] bg-white outline-none w-full"
                 value={chartTitle}
                 autoFocus
-                onChange={e => setChartTitle(e.target.value)}
+                onChange={(e) => setChartTitle(e.target.value)}
                 onBlur={() => setEditingTitle(false)}
-                onKeyDown={e => { if (e.key === 'Enter') setEditingTitle(false); }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") setEditingTitle(false);
+                }}
                 style={{ minWidth: 120 }}
               />
               <span className="block h-0.5 bg-[#3398FF] scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
@@ -649,68 +773,128 @@ const ChartCard = ({
           )}
         </div>
         <div className="flex items-center gap-6 ml-4">
-          <div className="hover:opacity-80 cursor-pointer" onClick={onToggleExpand}>
+          <div
+            className="hover:opacity-80 cursor-pointer"
+            onClick={onToggleExpand}
+          >
             <img
               src="/filter.svg"
               alt="Filter"
               className="w-6 h-6"
               style={{
                 filter: expanded
-                  ? 'invert(62%) sepia(98%) saturate(749%) hue-rotate(176deg) brightness(101%) contrast(101%)' // #3398FF
-                  : 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' // #A3B3BF
+                  ? "invert(62%) sepia(98%) saturate(749%) hue-rotate(176deg) brightness(101%) contrast(101%)" // #3398FF
+                  : "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)", // #A3B3BF
               }}
             />
           </div>
-          <div className={`hover:opacity-80 cursor-pointer${isFirst ? ' opacity-30 pointer-events-none' : ''}`} onClick={isFirst ? undefined : onMoveUp}>
-            <img src="/up.svg" alt="Move Up" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          <div
+            className={`hover:opacity-80 cursor-pointer${
+              isFirst ? " opacity-30 pointer-events-none" : ""
+            }`}
+            onClick={isFirst ? undefined : onMoveUp}
+          >
+            <img
+              src="/up.svg"
+              alt="Move Up"
+              className="w-6 h-6"
+              style={{
+                filter:
+                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
+              }}
+            />
           </div>
-          <div className={`hover:opacity-80 cursor-pointer${isLast ? ' opacity-30 pointer-events-none' : ''}`} onClick={isLast ? undefined : onMoveDown}>
-            <img src="/down.svg" alt="Move Down" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          <div
+            className={`hover:opacity-80 cursor-pointer${
+              isLast ? " opacity-30 pointer-events-none" : ""
+            }`}
+            onClick={isLast ? undefined : onMoveDown}
+          >
+            <img
+              src="/down.svg"
+              alt="Move Down"
+              className="w-6 h-6"
+              style={{
+                filter:
+                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
+              }}
+            />
           </div>
-          <div className="hover:opacity-80 cursor-pointer" onClick={onDuplicate}>
-            <img src="/duplicate.svg" alt="Duplicate" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+          <div
+            className="hover:opacity-80 cursor-pointer"
+            onClick={onDuplicate}
+          >
+            <img
+              src="/duplicate.svg"
+              alt="Duplicate"
+              className="w-6 h-6"
+              style={{
+                filter:
+                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
+              }}
+            />
           </div>
           <div className="hover:opacity-80 cursor-pointer" onClick={onDelete}>
-            <img src="/delete.svg" alt="Delete" className="w-6 h-6" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
+            <img
+              src="/delete.svg"
+              alt="Delete"
+              className="w-6 h-6"
+              style={{
+                filter:
+                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
+              }}
+            />
           </div>
         </div>
       </div>
       {/* Chart settings summary */}
-      <div className="mb-6 text-sm font-medium" style={{ color: '#215273' }}>
+      <div className="mb-6 text-sm font-medium" style={{ color: "#215273" }}>
         {useCustom
-          ? `Custom: ${customStart.toISOString().slice(0, 10)} to ${customEnd.toISOString().slice(0, 10)}`
-          : `Past ${dateRangeValue} ${dateRangeTypes.find(d => d.value === dateRangeType)?.label}${dateRangeValue > 1 ? 's' : ''}`
-        }
+          ? `Custom: ${customStart.toISOString().slice(0, 10)} to ${customEnd
+              .toISOString()
+              .slice(0, 10)}`
+          : `Past ${dateRangeValue} ${
+              dateRangeTypes.find((d) => d.value === dateRangeType)?.label
+            }${dateRangeValue > 1 ? "s" : ""}`}
       </div>
-      {expanded && (
-        <div className="rounded-lg mb-6 flex flex-col">
-          {/* Add filter row */}
-          <div className="flex items-center gap-2 border border-[#E9EDEF] p-4 mb-[-1px] relative">
-            <span className="text-[#3398FF] text-lg mr-2">+</span>
-            <span
-              className="text-[#3398FF] font-medium cursor-pointer select-none"
-              onClick={() => setAddFilterDropdownOpen((v) => !v)}
-              tabIndex={0}
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setAddFilterDropdownOpen((v) => !v); }}
+
+      {/* Filter row */}
+      <div className="mb-6">
+        {/* Top controls row: Add Filter, Filter, Clear All Filters */}
+        <div className="flex items-center gap-2 border border-[#E9EDEF] p-4 relative w-full">
+          <img src="/add-blue.svg" alt="Filter" className="w-4 h-4" />
+          <span
+            className="text-[#3398FF] font-medium cursor-pointer select-none"
+            onClick={() => setAddFilterDropdownOpen((v) => !v)}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ")
+                setAddFilterDropdownOpen((v) => !v);
+            }}
+          >
+            Add filter
+          </span>
+          {addFilterDropdownOpen && (
+            <div
+              ref={addFilterRef}
+              className="absolute left-0 top-full mt-2 w-48 bg-white border border-[#E9EDEF] rounded shadow-lg z-50"
             >
-              Add filter
-            </span>
-            {addFilterDropdownOpen && (
               <div
-                ref={addFilterRef}
-                className="absolute left-0 top-full mt-2 w-48 bg-white border border-[#E9EDEF] rounded shadow-lg z-50"
+                className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273] font-semibold border-b border-[#E9EDEF]"
+                onClick={() => {
+                  const all = ["Color", "Fabric", "Season", "Line", "Buyer"];
+                  setActiveFilters([
+                    ...activeFilters,
+                    ...all.filter((f) => !activeFilters.includes(f)),
+                  ]);
+                  setAddFilterDropdownOpen(false);
+                }}
               >
-                <div
-                  className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273] font-semibold border-b border-[#E9EDEF]"
-                  onClick={() => {
-                    const all = ["Color", "Fabric", "Season", "Line", "Buyer"];
-                    setActiveFilters([...activeFilters, ...all.filter(f => !activeFilters.includes(f))]);
-                    setAddFilterDropdownOpen(false);
-                  }}
-                >
-                  All filters
-                </div>
-                {["Color", "Fabric", "Season", "Line", "Buyer"].filter(f => !activeFilters.includes(f)).map(f => (
+                All filters
+              </div>
+              {["Color", "Fabric", "Season", "Line", "Buyer"]
+                .filter((f) => !activeFilters.includes(f))
+                .map((f) => (
                   <div
                     key={f}
                     className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273]"
@@ -722,127 +906,162 @@ const ChartCard = ({
                     {f}
                   </div>
                 ))}
-                {activeFilters.length === 5 && (
-                  <div className="px-4 py-2 text-[#A3B3BF]">All filters added</div>
-                )}
-              </div>
-            )}
-            {/* Clear all filters button */}
-            <div className="ml-auto">
-              <span
-                className="text-[#A3B3BF] font-medium cursor-pointer select-none hover:text-[#3398FF]"
-                onClick={clearAllFilters}
-                tabIndex={0}
-                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') clearAllFilters(); }}
-              >
-                Clear all filters
-              </span>
+              {activeFilters.length === 5 && (
+                <div className="px-4 py-2 text-[#A3B3BF]">
+                  All filters added
+                </div>
+              )}
             </div>
-          </div>
-          {/* Date range row (always present) */}
-          <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 mb-[-1px]">
-            <span className="text-[#215273] font-medium w-[90px] text-left" style={{ color: '#215273' }}>Date Range</span>
-            <input
-              type="date"
-              className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
-              value={customStart.toISOString().slice(0, 10)}
-              onChange={e => {
-                setCustomStart(new Date(e.target.value));
-                setUseCustom(true);
+          )}
+          {/* Filter button */}
+          <span
+            className="flex items-center gap-1 ml-4 text-[#3398FF] font-medium cursor-pointer select-none"
+            onClick={onToggleExpand}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") onToggleExpand();
+            }}
+          >
+            <img src="/filter-blue.svg" alt="Filter" className="w-5 h-5 mr-1" />
+            {expanded ? "Hide Filter" : "Show Filter"}
+          </span>
+          <div className="ml-auto">
+            <span
+              className="text-[#A3B3BF] font-medium cursor-pointer select-none hover:text-[#3398FF]"
+              onClick={clearAllFilters}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") clearAllFilters();
               }}
-            />
-            <span style={{ color: '#215273' }}>to</span>
-            <input
-              type="date"
-              className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
-              value={customEnd.toISOString().slice(0, 10)}
-              onChange={e => {
-                setCustomEnd(new Date(e.target.value));
-                setUseCustom(true);
-              }}
-            />
-            <div className="flex gap-2 ml-2 flex-wrap">
-              {[
-                { label: "Past Month", type: "month", value: 1 },
-                { label: "Past Quarter", type: "quarter", value: 1 },
-                { label: "Past Year", type: "year", value: 1 },
-                { label: "Past 5 Year", type: "year", value: 5 },
-              ].map(opt => {
-                const isActive = !useCustom && dateRangeType === opt.type && dateRangeValue === opt.value;
-                return (
-                  <div
-                    key={opt.label}
-                    className={`px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none transition-colors ${isActive ? 'bg-[#E6F0F8] text-[#3398FF] border-[#C3E7FE]' : 'bg-transparent text-[#215273] hover:bg-[#F5F8FA]'}`}
-                    onClick={() => {
-                      setDateRangeType(opt.type);
-                      setDateRangeValue(opt.value);
-                      setUseCustom(false);
-                      // Set customStart/customEnd to match quick range
-                      const now = new Date();
-                      let start;
-                      if (opt.type === "year") {
-                        start = new Date(now.getFullYear() - opt.value, now.getMonth(), now.getDate());
-                      } else if (opt.type === "quarter") {
-                        start = new Date(now);
-                        start.setMonth(now.getMonth() - 3 * opt.value);
-                      } else if (opt.type === "month") {
-                        start = new Date(now);
-                        start.setMonth(now.getMonth() - opt.value);
-                      }
-                      setCustomStart(start);
-                      setCustomEnd(now);
-                    }}
-                  >
-                    {opt.label}
-                  </div>
-                );
-              })}
-            </div>
+            >
+              Clear all filters
+            </span>
           </div>
-          {/* Conditionally render filter rows */}
-          {activeFilters.includes("Color") && (
-            <FilterRow
-              label="Color"
-              options={getAllColors()}
-              selectedValues={selectedColors}
-              setSelectedValues={setSelectedColors}
-              colorDot
-            />
-          )}
-          {activeFilters.includes("Fabric") && (
-            <FilterRow
-              label="Fabric"
-              options={getAllFabrics()}
-              selectedValues={selectedFabrics}
-              setSelectedValues={setSelectedFabrics}
-            />
-          )}
-          {activeFilters.includes("Season") && (
-            <FilterRow
-              label="Season"
-              options={getAllSeasons()}
-              selectedValues={selectedSeasons}
-              setSelectedValues={setSelectedSeasons}
-            />
-          )}
-          {activeFilters.includes("Line") && (
-            <FilterRow
-              label="Line"
-              options={getAllLines()}
-              selectedValues={selectedLines}
-              setSelectedValues={setSelectedLines}
-            />
-          )}
-          {activeFilters.includes("Buyer") && (
-            <FilterRow
-              label="Buyer"
-              options={getAllBuyers()}
-              selectedValues={selectedBuyers}
-              setSelectedValues={setSelectedBuyers}
-            />
-          )}
         </div>
-      )}
+
+        {expanded && (
+          <div className="rounded-lg flex flex-col">
+            {/* Date range row (always present) */}
+            <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px]">
+              <span
+                className="text-[#215273] font-medium w-[90px] text-left"
+                style={{ color: "#215273" }}
+              >
+                Date Range
+              </span>
+              <input
+                type="date"
+                className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
+                value={customStart.toISOString().slice(0, 10)}
+                onChange={(e) => {
+                  setCustomStart(new Date(e.target.value));
+                  setUseCustom(true);
+                }}
+              />
+              <span style={{ color: "#215273" }}>to</span>
+              <input
+                type="date"
+                className="px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
+                value={customEnd.toISOString().slice(0, 10)}
+                onChange={(e) => {
+                  setCustomEnd(new Date(e.target.value));
+                  setUseCustom(true);
+                }}
+              />
+              <div className="flex gap-2 ml-2 flex-wrap">
+                {[
+                  { label: "Past Month", type: "month", value: 1 },
+                  { label: "Past Quarter", type: "quarter", value: 1 },
+                  { label: "Past Year", type: "year", value: 1 },
+                  { label: "Past 5 Year", type: "year", value: 5 },
+                ].map((opt) => {
+                  const isActive =
+                    !useCustom &&
+                    dateRangeType === opt.type &&
+                    dateRangeValue === opt.value;
+                  return (
+                    <div
+                      key={opt.label}
+                      className={`px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none transition-colors ${
+                        isActive
+                          ? "bg-[#E6F0F8] text-[#3398FF] border-[#C3E7FE]"
+                          : "bg-transparent text-[#215273] hover:bg-[#F5F8FA]"
+                      }`}
+                      onClick={() => {
+                        setDateRangeType(opt.type);
+                        setDateRangeValue(opt.value);
+                        setUseCustom(false);
+                        // Set customStart/customEnd to match quick range
+                        const now = new Date();
+                        let start;
+                        if (opt.type === "year") {
+                          start = new Date(
+                            now.getFullYear() - opt.value,
+                            now.getMonth(),
+                            now.getDate()
+                          );
+                        } else if (opt.type === "quarter") {
+                          start = new Date(now);
+                          start.setMonth(now.getMonth() - 3 * opt.value);
+                        } else if (opt.type === "month") {
+                          start = new Date(now);
+                          start.setMonth(now.getMonth() - opt.value);
+                        }
+                        setCustomStart(start);
+                        setCustomEnd(now);
+                      }}
+                    >
+                      {opt.label}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Conditionally render filter rows */}
+            {activeFilters.includes("Color") && (
+              <FilterRow
+                label="Color"
+                options={getAllColors()}
+                selectedValues={selectedColors}
+                setSelectedValues={setSelectedColors}
+                colorDot
+              />
+            )}
+            {activeFilters.includes("Fabric") && (
+              <FilterRow
+                label="Fabric"
+                options={getAllFabrics()}
+                selectedValues={selectedFabrics}
+                setSelectedValues={setSelectedFabrics}
+              />
+            )}
+            {activeFilters.includes("Season") && (
+              <FilterRow
+                label="Season"
+                options={getAllSeasons()}
+                selectedValues={selectedSeasons}
+                setSelectedValues={setSelectedSeasons}
+              />
+            )}
+            {activeFilters.includes("Line") && (
+              <FilterRow
+                label="Line"
+                options={getAllLines()}
+                selectedValues={selectedLines}
+                setSelectedValues={setSelectedLines}
+              />
+            )}
+            {activeFilters.includes("Buyer") && (
+              <FilterRow
+                label="Buyer"
+                options={getAllBuyers()}
+                selectedValues={selectedBuyers}
+                setSelectedValues={setSelectedBuyers}
+              />
+            )}
+          </div>
+        )}
+      </div>
       {/* Chart */}
       <div className="w-full flex flex-row">
         {/* Left: Main chart */}
@@ -866,7 +1085,13 @@ const ChartCard = ({
         {/* Right: Two stacked charts */}
         <div className="flex flex-col gap-2 w-[320px] min-w-[220px] max-w-[340px] h-[550px] overflow-y-auto">
           {/* Top: Avg Margin Pie Chart */}
-          <MarginPieChart avgPrice={avgPrice} avgCost={avgCost} pieData={pieData} pieColors={pieColors} height={200} />
+          <MarginPieChart
+            avgPrice={avgPrice}
+            avgCost={avgCost}
+            pieData={pieData}
+            pieColors={pieColors}
+            height={200}
+          />
           {/* Bottom: Buyer ranking */}
           <BuyerRankingChart buyerRanking={buyerRanking} height={341} />
         </div>
