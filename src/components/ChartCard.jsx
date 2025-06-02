@@ -283,20 +283,6 @@ function getBuyerRanking(products) {
     .sort((a, b) => b.quantity - a.quantity);
 }
 
-// Helper to get all unique colors from the data
-function getAllColors() {
-  const allProducts = getAllProducts();
-  const colorSet = new Set();
-  allProducts.forEach((p) => {
-    if (Array.isArray(p.color)) {
-      p.color.forEach((c) => colorSet.add(c));
-    } else if (p.color) {
-      colorSet.add(p.color);
-    }
-  });
-  return Array.from(colorSet).sort();
-}
-
 const ChartCard = ({
   chartType,
   setChartType,
@@ -495,44 +481,6 @@ const ChartCard = ({
   // Track hovered/active index for tooltip
   const [activeTooltipIndex, setActiveTooltipIndex] = useState(null);
 
-  // Helper to get all unique values for each filter type
-  function getAllFabrics() {
-    const allProducts = getAllProducts();
-    const fabricSet = new Set();
-    allProducts.forEach((p) => {
-      if (Array.isArray(p.fabric)) {
-        p.fabric.forEach((f) => fabricSet.add(f));
-      } else if (p.fabric) {
-        fabricSet.add(p.fabric);
-      }
-    });
-    return Array.from(fabricSet).sort();
-  }
-  function getAllSeasons() {
-    const allProducts = getAllProducts();
-    const seasonSet = new Set();
-    allProducts.forEach((p) => {
-      if (p.season) seasonSet.add(p.season);
-    });
-    return Array.from(seasonSet).sort();
-  }
-  function getAllLines() {
-    const allProducts = getAllProducts();
-    const lineSet = new Set();
-    allProducts.forEach((p) => {
-      if (p.product_line) lineSet.add(p.product_line);
-    });
-    return Array.from(lineSet).sort();
-  }
-  function getAllBuyers() {
-    const allProducts = getAllProducts();
-    const buyerSet = new Set();
-    allProducts.forEach((p) => {
-      if (p.buyer) buyerSet.add(p.buyer);
-    });
-    return Array.from(buyerSet).sort();
-  }
-
   // Add filter dropdown logic
   const [addFilterDropdownOpen, setAddFilterDropdownOpen] = useState(false);
   const addFilterRef = useRef(null);
@@ -580,6 +528,119 @@ const ChartCard = ({
     setCustomStart(start);
     setCustomEnd(now);
   }
+
+  // Helper to get all unique colors from the filtered data
+  const getAllColors = () => {
+    const filteredProducts = getFilteredProducts({
+      dateRangeType,
+      dateRangeValue,
+      customStart,
+      customEnd,
+      useCustom,
+      selectedColors: [], // Empty to get all colors
+      selectedFabrics: selectedFabrics,
+      selectedSeasons: selectedSeasons,
+      selectedLines: selectedLines,
+      selectedBuyers: selectedBuyers,
+    });
+    const colorSet = new Set();
+    filteredProducts.forEach((p) => {
+      if (Array.isArray(p.color)) {
+        p.color.forEach((c) => colorSet.add(c));
+      } else if (p.color) {
+        colorSet.add(p.color);
+      }
+    });
+    return Array.from(colorSet).sort();
+  };
+
+  // Helper to get all unique fabrics from the filtered data
+  const getAllFabrics = () => {
+    const filteredProducts = getFilteredProducts({
+      dateRangeType,
+      dateRangeValue,
+      customStart,
+      customEnd,
+      useCustom,
+      selectedColors: selectedColors,
+      selectedFabrics: [], // Empty to get all fabrics
+      selectedSeasons: selectedSeasons,
+      selectedLines: selectedLines,
+      selectedBuyers: selectedBuyers,
+    });
+    const fabricSet = new Set();
+    filteredProducts.forEach((p) => {
+      if (Array.isArray(p.fabric)) {
+        p.fabric.forEach((f) => fabricSet.add(f));
+      } else if (p.fabric) {
+        fabricSet.add(p.fabric);
+      }
+    });
+    return Array.from(fabricSet).sort();
+  };
+
+  // Helper to get all unique seasons from the filtered data
+  const getAllSeasons = () => {
+    const filteredProducts = getFilteredProducts({
+      dateRangeType,
+      dateRangeValue,
+      customStart,
+      customEnd,
+      useCustom,
+      selectedColors: selectedColors,
+      selectedFabrics: selectedFabrics,
+      selectedSeasons: [], // Empty to get all seasons
+      selectedLines: selectedLines,
+      selectedBuyers: selectedBuyers,
+    });
+    const seasonSet = new Set();
+    filteredProducts.forEach((p) => {
+      if (p.season) seasonSet.add(p.season);
+    });
+    return Array.from(seasonSet).sort();
+  };
+
+  // Helper to get all unique product lines from the filtered data
+  const getAllLines = () => {
+    const filteredProducts = getFilteredProducts({
+      dateRangeType,
+      dateRangeValue,
+      customStart,
+      customEnd,
+      useCustom,
+      selectedColors: selectedColors,
+      selectedFabrics: selectedFabrics,
+      selectedSeasons: selectedSeasons,
+      selectedLines: [], // Empty to get all lines
+      selectedBuyers: selectedBuyers,
+    });
+    const lineSet = new Set();
+    filteredProducts.forEach((p) => {
+      if (p.product_line) lineSet.add(p.product_line);
+    });
+    return Array.from(lineSet).sort();
+  };
+
+  // Helper to get all unique buyers from the filtered data
+  const getAllBuyers = () => {
+    const filteredProducts = getFilteredProducts({
+      dateRangeType,
+      dateRangeValue,
+      customStart,
+      customEnd,
+      useCustom,
+      selectedColors: selectedColors,
+      selectedFabrics: selectedFabrics,
+      selectedSeasons: selectedSeasons,
+      selectedLines: selectedLines,
+      selectedBuyers: [], // Empty to get all buyers
+    });
+    const buyerSet = new Set();
+    filteredProducts.forEach((p) => {
+      if (p.buyer) buyerSet.add(p.buyer);
+    });
+    return Array.from(buyerSet).sort();
+  };
 
   return (
     <div

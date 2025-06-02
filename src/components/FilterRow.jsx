@@ -79,7 +79,7 @@ const FilterRow = ({
   }
 
   return (
-    <div className={`flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px]${isLast ? ' rounded-b-md' : ''}`}>
+    <div className={`flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px] ${isLast ? ' rounded-b-md' : ''}`}>
       <span
         className="text-[#215273] font-medium w-[120px] text-left"
         style={{ color: "#215273" }}
