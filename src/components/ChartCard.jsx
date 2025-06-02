@@ -644,7 +644,7 @@ const ChartCard = ({
 
   return (
     <div
-      className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto chart-card"
+      className="rounded-xl p-8 mb-8 mx-auto chart-card"
       style={{ width: "80vw", maxWidth: 1200 }}
     >
       <Modal
@@ -682,65 +682,6 @@ const ChartCard = ({
               <span className="block h-0.5 bg-[#3398FF] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
             </span>
           )}
-        </div>
-        <div className="flex items-center gap-6 ml-4">
-          <div
-            className={`hover:opacity-80 cursor-pointer${
-              isFirst ? " opacity-30 pointer-events-none" : ""
-            }`}
-            onClick={isFirst ? undefined : onMoveUp}
-          >
-            <img
-              src="/up.svg"
-              alt="Move Up"
-              className="w-6 h-6"
-              style={{
-                filter:
-                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
-              }}
-            />
-          </div>
-          <div
-            className={`hover:opacity-80 cursor-pointer${
-              isLast ? " opacity-30 pointer-events-none" : ""
-            }`}
-            onClick={isLast ? undefined : onMoveDown}
-          >
-            <img
-              src="/down.svg"
-              alt="Move Down"
-              className="w-6 h-6"
-              style={{
-                filter:
-                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
-              }}
-            />
-          </div>
-          <div
-            className="hover:opacity-80 cursor-pointer"
-            onClick={onDuplicate}
-          >
-            <img
-              src="/duplicate.svg"
-              alt="Duplicate"
-              className="w-6 h-6"
-              style={{
-                filter:
-                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
-              }}
-            />
-          </div>
-          <div className="hover:opacity-80 cursor-pointer" onClick={onDelete}>
-            <img
-              src="/delete.svg"
-              alt="Delete"
-              className="w-6 h-6"
-              style={{
-                filter:
-                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
-              }}
-            />
-          </div>
         </div>
       </div>
       {/* Chart settings summary */}
@@ -803,7 +744,7 @@ const ChartCard = ({
         </div>
 
       {/* Filter row */}
-      <div className="mb-6">
+      <div className="mb-6 bg-white">
             {/* Date range row (always present) */}
         <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px] rounded-t-md">
               <span

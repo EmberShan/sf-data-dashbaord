@@ -137,7 +137,7 @@ const MainChart = ({
 
   return (
     <div
-      className="flex-1 min-w-0 bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex flex-col justify-center"
+      className="flex-1 min-w-0 bg-white rounded-lg border border-[#DDE9F3] p-4 flex flex-col justify-center"
       style={{ height: '100%'}}
     >
       {/* Editable title */}
