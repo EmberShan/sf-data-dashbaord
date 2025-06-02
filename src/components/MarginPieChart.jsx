@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 // MarginPieChart.jsx
 // Displays a pie chart visualizing average margin, cost, and price for filtered shirt data.
 const MarginPieChart = ({ avgPrice, avgCost, pieData, pieColors, height = 220 }) => (
-  <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 h-full flex flex-col">
+  <div className="bg-white rounded-lg border border-[#DDE9F3] p-4 h-full flex flex-col">
     <div className="text-[#215273] font-semibold text-base">Average Margin</div>
     <div className="flex flex-row items-center flex-1">
       <div className="flex-shrink-0 flex items-center justify-center" style={{ width: 'min(160px, 70%)', height: 'min(160px, 70%)' }}>

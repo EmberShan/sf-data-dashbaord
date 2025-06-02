@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import CustomChartTooltip from "./CustomChartTooltip";
 import { createPortal } from "react-dom";
@@ -114,6 +115,7 @@ const MainChart = ({
   activeTooltipIndex,
   setActiveTooltipIndex,
   chartHeight = 550,
+  selectedBar,
 }) => {
   // Compute yKey for chart
   let yKey = viewBy;
@@ -135,9 +137,15 @@ const MainChart = ({
 
   // X axis key is always 'x' (already grouped by categoryBy in chartData)
 
+  // Bar/Line color logic
+  const getBarFill = (d) => {
+    if (!selectedBar) return "#C4E7FF";
+    return (d.x === selectedBar) ? "#C4E7FF" : "#E9EDEF";
+  };
+
   return (
     <div
-      className="flex-1 min-w-0 bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex flex-col justify-center"
+      className="flex-1 min-w-0 bg-white rounded-lg border border-[#DDE9F3] p-4 flex flex-col justify-center"
       style={{ height: '100%'}}
     >
       {/* Editable title */}
@@ -252,7 +260,11 @@ const MainChart = ({
                 content={<CustomChartTooltip yKey={yKey} />}
                 cursor={{ fill: "#E6F0F8" }}
               />
-              <Bar dataKey={yKey} fill="#C4E7FF" className="cursor-pointer" />
+              <Bar dataKey={yKey} className="cursor-pointer" fill="#C4E7FF">
+                {displayData.map((entry, idx) => (
+                  <Cell key={`cell-${idx}`} fill={getBarFill(entry)} />
+                ))}
+              </Bar>
             </BarChart>
           ) : (
             <LineChart
@@ -288,7 +300,16 @@ const MainChart = ({
                 dataKey={yKey}
                 stroke="#C4E7FF"
                 strokeWidth={3}
-                activeDot={{ r: 8, style: { cursor: "pointer" } }}
+                activeDot={{
+                  r: 8,
+                  style: { cursor: "pointer" },
+                  fill: (props) => getBarFill(props.payload),
+                }}
+                dot={{
+                  stroke: "#C4E7FF",
+                  strokeWidth: 2,
+                  fill: (props) => getBarFill(props.payload),
+                }}
               />
             </LineChart>
           )}
