@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -11,6 +11,71 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import CustomChartTooltip from "./CustomChartTooltip";
+import { createPortal } from "react-dom";
+
+// Custom tick component for wrapping long labels
+const CustomTick = ({ x, y, payload, width, data }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const textRef = useRef(null);
+
+  // Calculate max characters that can fit in the bar width
+  const barWidth = width / data.length;
+  const maxChars = Math.floor(barWidth / 8); // Approximate character width of 8px
+
+  const text = payload.value.length > maxChars ? payload.value.slice(0, maxChars) + '…' : payload.value;
+  const isTruncated = payload.value.length > maxChars;
+
+  const handleMouseEnter = (e) => {
+    if (isTruncated) {
+      const rect = e.target.getBoundingClientRect();
+      setTooltipPosition({
+        x: rect.left + rect.width / 2,
+        y: rect.top - 10
+      });
+      setShowTooltip(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        ref={textRef}
+        x={0}
+        y={0}
+        dy={16}
+        textAnchor="middle"
+        fill="#7C93A3"
+        fontSize={12}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{ cursor: isTruncated ? 'pointer' : 'default' }}
+      >
+        {text}
+      </text>
+      {showTooltip && isTruncated && createPortal(
+        <div
+          className="bg-white p-2 rounded shadow border border-[#DDE9F3] text-[#215273] text-sm whitespace-nowrap"
+          style={{
+            position: 'fixed',
+            left: tooltipPosition.x,
+            top: tooltipPosition.y,
+            transform: 'translate(-50%, -100%)',
+            zIndex: 50,
+            pointerEvents: 'none'
+          }}
+        >
+          {payload.value}
+        </div>,
+        document.body
+      )}
+    </g>
+  );
+};
 
 // MainChart.jsx
 // Renders the main bar/line chart for the dashboard, with dynamic axes and title, based on props and filters.
@@ -72,8 +137,8 @@ const MainChart = ({
 
   return (
     <div
-      className="flex-1 min-w-0 bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 mr-0 lg:mr-2 mb-4 lg:mb-0 flex flex-col justify-center"
-      style={{ height: chartHeight }}
+      className="flex-1 min-w-0 bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 flex flex-col justify-center"
+      style={{ height: '100%'}}
     >
       {/* Editable title */}
       <div className="text-[#215273] font-semibold text-lg flex-1 min-w-[180px] relative">
@@ -156,73 +221,79 @@ const MainChart = ({
         </div>
       </div>
       {/* Chart */}
-      <ResponsiveContainer width="100%" height="100%">
-        {chartType === "bar" ? (
-          <BarChart
-            data={displayData}
-            onMouseMove={(state) =>
-              setActiveTooltipIndex(
-                state && state.activeTooltipIndex != null
-                  ? state.activeTooltipIndex
-                  : null
-              )
-            }
-            onMouseLeave={() => setActiveTooltipIndex(null)}
-            onClick={() => {
-              if (activeTooltipIndex != null)
-                handleBarOrDotClick(displayData[activeTooltipIndex]);
-            }}
-          >
-            <CartesianGrid stroke="#EAEAEA" />
-            <XAxis
-              dataKey="x"
-              stroke="#A3B3BF"
-              tick={{ fill: "#7C93A3", fontSize: 14 }}
-            />
-            <YAxis stroke="#A3B3BF" tick={{ fill: "#7C93A3", fontSize: 14 }} />
-            <Tooltip
-              content={<CustomChartTooltip yKey={yKey} />}
-              cursor={{ fill: "#E6F0F8" }}
-            />
-            <Bar dataKey={yKey} fill="#C4E7FF" className="cursor-pointer" />
-          </BarChart>
-        ) : (
-          <LineChart
-            data={displayData}
-            onMouseMove={(state) =>
-              setActiveTooltipIndex(
-                state && state.activeTooltipIndex != null
-                  ? state.activeTooltipIndex
-                  : null
-              )
-            }
-            onMouseLeave={() => setActiveTooltipIndex(null)}
-            onClick={() => {
-              if (activeTooltipIndex != null)
-                handleBarOrDotClick(displayData[activeTooltipIndex]);
-            }}
-          >
-            <CartesianGrid stroke="#EAEAEA" />
-            <XAxis
-              dataKey="x"
-              stroke="#A3B3BF"
-              tick={{ fill: "#A3B3BF", fontSize: 14 }}
-            />
-            <YAxis stroke="#A3B3BF" tick={{ fill: "#A3B3BF", fontSize: 14 }} />
-            <Tooltip
-              content={<CustomChartTooltip yKey={yKey} />}
-              cursor={{ fill: "#E6F0F8" }}
-            />
-            <Line
-              type="monotone"
-              dataKey={yKey}
-              stroke="#C4E7FF"
-              strokeWidth={3}
-              activeDot={{ r: 8, style: { cursor: "pointer" } }}
-            />
-          </LineChart>
-        )}
-      </ResponsiveContainer>
+      <div className="flex-1 min-h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
+          {chartType === "bar" ? (
+            <BarChart
+              data={displayData}
+              onMouseMove={(state) =>
+                setActiveTooltipIndex(
+                  state && state.activeTooltipIndex != null
+                    ? state.activeTooltipIndex
+                    : null
+                )
+              }
+              onMouseLeave={() => setActiveTooltipIndex(null)}
+              onClick={() => {
+                if (activeTooltipIndex != null)
+                  handleBarOrDotClick(displayData[activeTooltipIndex]);
+              }}
+            >
+              <CartesianGrid stroke="#EAEAEA" />
+              <XAxis
+                dataKey="x"
+                stroke="#A3B3BF"
+                tick={(props) => <CustomTick {...props} data={displayData} />}
+                height={30}
+                interval={0}
+              />
+              <YAxis stroke="#A3B3BF" tick={{ fill: "#7C93A3", fontSize: 14 }} />
+              <Tooltip
+                content={<CustomChartTooltip yKey={yKey} />}
+                cursor={{ fill: "#E6F0F8" }}
+              />
+              <Bar dataKey={yKey} fill="#C4E7FF" className="cursor-pointer" />
+            </BarChart>
+          ) : (
+            <LineChart
+              data={displayData}
+              onMouseMove={(state) =>
+                setActiveTooltipIndex(
+                  state && state.activeTooltipIndex != null
+                    ? state.activeTooltipIndex
+                    : null
+                )
+              }
+              onMouseLeave={() => setActiveTooltipIndex(null)}
+              onClick={() => {
+                if (activeTooltipIndex != null)
+                  handleBarOrDotClick(displayData[activeTooltipIndex]);
+              }}
+            >
+              <CartesianGrid stroke="#EAEAEA" />
+              <XAxis
+                dataKey="x"
+                stroke="#A3B3BF"
+                tick={(props) => <CustomTick {...props} data={displayData} />}
+                height={30}
+                interval={0}
+              />
+              <YAxis stroke="#A3B3BF" tick={{ fill: "#7C93A3", fontSize: 14 }} />
+              <Tooltip
+                content={<CustomChartTooltip yKey={yKey} />}
+                cursor={{ fill: "#E6F0F8" }}
+              />
+              <Line
+                type="monotone"
+                dataKey={yKey}
+                stroke="#C4E7FF"
+                strokeWidth={3}
+                activeDot={{ r: 8, style: { cursor: "pointer" } }}
+              />
+            </LineChart>
+          )}
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

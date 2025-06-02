@@ -688,13 +688,13 @@ const ChartCard = ({
           {/* Date Range */}
           <span className="flex items-center gap-1">
             <img src="/calendar.svg" alt="" className="w-4 h-4" />
-            {useCustom
+        {useCustom
               ? `${customStart.toISOString().slice(0, 10)} to ${customEnd
-                  .toISOString()
-                  .slice(0, 10)}`
-              : `Past ${dateRangeValue} ${
-                  dateRangeTypes.find((d) => d.value === dateRangeType)?.label
-                }${dateRangeValue > 1 ? "s" : ""}`}
+              .toISOString()
+              .slice(0, 10)}`
+          : `Past ${dateRangeValue} ${
+              dateRangeTypes.find((d) => d.value === dateRangeType)?.label
+            }${dateRangeValue > 1 ? "s" : ""}`}
           </span>
 
           {/* Active Filters */}
@@ -704,7 +704,7 @@ const ChartCard = ({
               {selectedColors.length === 1 
                 ? selectedColors[0]
                 : `${selectedColors.length} colors`}
-            </span>
+          </span>
           )}
           {selectedFabrics.length > 0 && selectedFabrics.length < getAllFabrics().length && (
             <span className="flex items-center gap-1">
@@ -720,7 +720,7 @@ const ChartCard = ({
               {selectedSeasons.length === 1 
                 ? selectedSeasons[0]
                 : `${selectedSeasons.length} seasons`}
-            </span>
+          </span>
           )}
           {selectedLines.length > 0 && selectedLines.length < getAllLines().length && (
             <span className="flex items-center gap-1">
@@ -738,12 +738,12 @@ const ChartCard = ({
                 : `${selectedBuyers.length} buyers`}
             </span>
           )}
+          </div>
         </div>
-      </div>
 
       {/* Filter row */}
       <div className="mb-6">
-        {/* Date range row (always present) */}
+            {/* Date range row (always present) */}
         <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px] rounded-t-md">
               <span
                 className="text-[#215273] font-medium w-[90px] text-left"
@@ -1017,37 +1017,43 @@ const ChartCard = ({
         )}
       </div>
       {/* Chart */}
-      <div className="w-full flex flex-row">
-        {/* Left: Main chart */}
-        <MainChart
-          chartType={mainChartType}
-          setChartType={setMainChartType}
-          chartTitle={mainChartTitle}
-          setChartTitle={setMainChartTitle}
-          editingTitle={editingMainChartTitle}
-          setEditingTitle={setEditingMainChartTitle}
-          viewBy={mainChartViewBy}
-          setViewBy={setMainChartViewBy}
-          categoryBy={mainChartCategory}
-          setCategoryBy={setMainChartCategory}
-          chartData={chartData}
-          handleBarOrDotClick={handleBarOrDotClick}
-          activeTooltipIndex={activeTooltipIndex}
-          setActiveTooltipIndex={setActiveTooltipIndex}
-          chartHeight={550}
-        />
-        {/* Right: Two stacked charts */}
-        <div className="flex flex-col gap-2 w-[320px] min-w-[220px] max-w-[340px] h-[550px] overflow-y-auto">
-          {/* Top: Avg Margin Pie Chart */}
-          <MarginPieChart
-            avgPrice={avgPrice}
-            avgCost={avgCost}
-            pieData={pieData}
-            pieColors={pieColors}
-            height={200}
+      <div className="w-full flex flex-col lg:flex-row gap-4">
+        {/* Main chart */}
+        <div className="flex-1 min-w-0">
+          <MainChart
+            chartType={mainChartType}
+            setChartType={setMainChartType}
+            chartTitle={mainChartTitle}
+            setChartTitle={setMainChartTitle}
+            editingTitle={editingMainChartTitle}
+            setEditingTitle={setEditingMainChartTitle}
+            viewBy={mainChartViewBy}
+            setViewBy={setMainChartViewBy}
+            categoryBy={mainChartCategory}
+            setCategoryBy={setMainChartCategory}
+            chartData={chartData}
+            handleBarOrDotClick={handleBarOrDotClick}
+            activeTooltipIndex={activeTooltipIndex}
+            setActiveTooltipIndex={setActiveTooltipIndex}
+            chartHeight={550}
           />
-          {/* Bottom: Buyer ranking */}
-          <BuyerRankingChart buyerRanking={buyerRanking} height={341} />
+        </div>
+        {/* Two smaller charts */}
+        <div className="flex flex-row lg:flex-col gap-4 lg:w-[320px] lg:min-w-[220px] lg:max-w-[340px]">
+          {/* Avg Margin Pie Chart */}
+          <div className="flex-1 min-h-[100px] lg:h-[200px]">
+            <MarginPieChart
+              avgPrice={avgPrice}
+              avgCost={avgCost}
+              pieData={pieData}
+              pieColors={pieColors}
+              height={200}
+            />
+          </div>
+          {/* Buyer ranking */}
+          <div className="flex-1 min-h-[100px] lg:h-[341px]">
+            <BuyerRankingChart buyerRanking={buyerRanking} height={341} />
+          </div>
         </div>
       </div>
 
