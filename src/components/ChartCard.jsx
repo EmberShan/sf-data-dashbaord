@@ -394,7 +394,7 @@ const ChartCard = ({
     { name: "avg cost", value: avgCost },
     { name: "margin", value: Math.max(avgPrice - avgCost, 0) },
   ];
-  const pieColors = ["#C4E7FF", "#E6F0F8"];
+  const pieColors = ["#E6F0F8", "#C4E7FF"];
 
   // --- Buyer ranking chart data (now inside component) ---
   let allFilteredProducts = [];

@@ -15,8 +15,8 @@ const MarginPieChart = ({ avgPrice, avgCost, pieData, pieColors, height = 220 })
               dataKey="value"
               innerRadius="60%"
               outerRadius="80%"
-              startAngle={90}
-              endAngle={-270}
+              startAngle={0}
+              endAngle={360}
               paddingAngle={0}
             >
               {pieData.map((entry, idx) => (
