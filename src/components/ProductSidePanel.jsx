@@ -90,7 +90,7 @@ const ProductSidePanel = ({ open, onClose, products, filterLabel }) => {
   return (
     <aside className="fixed top-16 right-0 w-[40vw] h-[calc(100vh-4rem)] bg-white border-l border-[#E9EDEF] flex flex-col">
       <div className="flex flex-col justify-between w-full border-b border-[#E9EDEF] p-4">
-        <div className="font-medium text-base">Product View</div>
+        <div className="text-[#215273] font-medium text-base">Product View</div>
         <div className="text-[#3398FF] font-medium text-base">
           {filterLabel}
         </div>
