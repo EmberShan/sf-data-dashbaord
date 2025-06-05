@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import shirtData from "../data/shirts.js";
+import catalogueData from "../data/catalogue.js";
 import Modal from "./Modal";
 import MainChart from "./MainChart";
 import MarginPieChart from "./MarginPieChart";
 import BuyerRankingChart from "./BuyerRankingChart";
 import FilterRow from "./FilterRow";
 import ConfirmationModal from "./ConfirmationModal";
+import ProductSidePanel from "./ProductSidePanel";
 
 // ChartCard.jsx
 // Main dashboard card component. Manages chart display, filter controls, and filter logic for shirt inventory data visualization.
@@ -49,7 +50,7 @@ function filterProductsByDate(products, start, end) {
 
 function getAllProducts() {
   let allProducts = [];
-  shirtData.clothing_inventory.forEach((seasonObj) => {
+  catalogueData.clothing_inventory.forEach((seasonObj) => {
     seasonObj.product_lines.forEach((line) => {
       line.products.forEach((product) => {
         allProducts.push({
@@ -141,7 +142,7 @@ function getChartData({
   selectedBuyers,
 }) {
   let allProducts = [];
-  shirtData.clothing_inventory.forEach((seasonObj) => {
+  catalogueData.clothing_inventory.forEach((seasonObj) => {
     seasonObj.product_lines.forEach((line) => {
       line.products.forEach((product) => {
         allProducts.push({
@@ -331,6 +332,11 @@ const ChartCard = ({
 
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
 
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const [sidePanelProducts, setSidePanelProducts] = useState([]);
+  const [sidePanelFilterLabel, setSidePanelFilterLabel] = useState("");
+  const [selectedBar, setSelectedBar] = useState(null); // for highlight
+
   const chartData = getChartData({
     viewBy: mainChartCategory,
     dateRangeType: useCustom ? "custom" : dateRangeType,
@@ -384,7 +390,7 @@ const ChartCard = ({
 
   // --- Buyer ranking chart data (now inside component) ---
   let allFilteredProducts = [];
-  shirtData.clothing_inventory.forEach((seasonObj) => {
+  catalogueData.clothing_inventory.forEach((seasonObj) => {
     seasonObj.product_lines.forEach((line) => {
       line.products.forEach((product) => {
         // Apply the same date filtering as getChartData
@@ -471,12 +477,56 @@ const ChartCard = ({
     return lines;
   }
 
-  // Chart click handler
-  const handleBarOrDotClick = (data) => {
-    setModalProducts(data.products || []);
-    setModalLabel(data.x || data.season || "");
-    setModalOpen(true);
+  // Helper: get all filtered products for Product View
+  const getAllFilteredProducts = () => {
+    return getFilteredProducts({
+      dateRangeType,
+      dateRangeValue,
+      customStart,
+      customEnd,
+      useCustom,
+      selectedColors,
+      selectedFabrics,
+      selectedSeasons,
+      selectedLines,
+      selectedBuyers,
+    });
   };
+
+  // Chart click handler (bar/dot)
+  const handleBarOrDotClick = (data) => {
+    // If already selected, clear filter and highlight
+    if (selectedBar && selectedBar === (data.x || data.season || "")) {
+      setSidePanelProducts(getAllFilteredProducts());
+      setSidePanelFilterLabel("");
+      setSelectedBar(null);
+      return;
+    }
+    setSidePanelProducts(data.products || []);
+    setSidePanelFilterLabel(data.x || data.season || "");
+    setSidePanelOpen(true);
+    setSelectedBar(data.x || data.season || "");
+  };
+
+  // Product View button handler (toggle)
+  const handleProductViewClick = () => {
+    if (sidePanelOpen && !sidePanelFilterLabel) {
+      setSidePanelOpen(false);
+      return;
+    }
+    setSidePanelProducts(getAllFilteredProducts());
+    setSidePanelFilterLabel("");
+    setSidePanelOpen(true);
+    setSelectedBar(null);
+  };
+
+  // Update side panel products live when filters change and no bar/dot is selected
+  useEffect(() => {
+    if (sidePanelOpen && !sidePanelFilterLabel) {
+      setSidePanelProducts(getAllFilteredProducts());
+    }
+    // eslint-disable-next-line
+  }, [sidePanelOpen, dateRangeType, dateRangeValue, customStart, customEnd, useCustom, selectedColors, selectedFabrics, selectedSeasons, selectedLines, selectedBuyers]);
 
   // Track hovered/active index for tooltip
   const [activeTooltipIndex, setActiveTooltipIndex] = useState(null);
@@ -642,104 +692,86 @@ const ChartCard = ({
     return Array.from(buyerSet).sort();
   };
 
+  // Helper: create a human-readable filter summary
+  const getFilterSummary = () => {
+    const parts = [];
+    // Date range
+    if (useCustom) {
+      parts.push(`Date: ${customStart.toISOString().slice(0, 10)} to ${customEnd.toISOString().slice(0, 10)}`);
+    } else {
+      parts.push(`Date: Past ${dateRangeValue} ${dateRangeType}${dateRangeValue > 1 ? 's' : ''}`);
+    }
+    // Filters
+    if (selectedColors.length > 0) parts.push(`Color: ${selectedColors.join(', ')}`);
+    if (selectedFabrics.length > 0) parts.push(`Fabric: ${selectedFabrics.join(', ')}`);
+    if (selectedSeasons.length > 0) parts.push(`Season: ${selectedSeasons.join(', ')}`);
+    if (selectedLines.length > 0) parts.push(`Line: ${selectedLines.join(', ')}`);
+    if (selectedBuyers.length > 0) parts.push(`Buyer: ${selectedBuyers.join(', ')}`);
+    return parts.join(' | ');
+  };
+
   return (
     <div
-      className="bg-white rounded-xl border border-[#DDE9F3] p-8 mb-8 mx-auto chart-card"
-      style={{ width: "80vw", maxWidth: 1200 }}
+      className={`rounded-xl mx-auto p-8 mb-8 chart-card transition-all duration-300 ${sidePanelOpen ? 'ml-12 mr-[40vw]' : 'w-[80vw] mx-auto'}`}
     >
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        label={modalLabel}
-        products={modalProducts}
-        viewBy={viewBy}
-        groupByProductLine={groupByProductLine}
+      <ProductSidePanel
+        open={sidePanelOpen}
+        onClose={() => setSidePanelOpen(false)}
+        products={sidePanelProducts}
+        filterLabel={
+          sidePanelFilterLabel
+            ? `${getFilterSummary()}${getFilterSummary() && sidePanelFilterLabel ? ' | ' : ''}${sidePanelFilterLabel ? `Filtered by: ${sidePanelFilterLabel}` : ''}`
+            : getFilterSummary()
+        }
       />
       <div className="flex items-center justify-between mb-2">
-        <div className="text-[#215273] font-semibold text-lg w-1/2 relative">
-          {editingTitle ? (
-            <div className="relative w-full">
-              <input
-                className="font-semibold text-lg text-[#215273] bg-white outline-none w-full"
-                value={chartTitle}
-                autoFocus
-                onChange={(e) => setChartTitle(e.target.value)}
-                onBlur={() => setEditingTitle(false)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") setEditingTitle(false);
-                }}
-                style={{ minWidth: 120 }}
-              />
-              <span className="block h-0.5 bg-[#3398FF] scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
-            </div>
-          ) : (
-            <span
-              className="cursor-pointer group inline-block w-full relative"
-              onClick={() => setEditingTitle(true)}
-              title="Click to edit title"
-            >
-              {chartTitle}
-              <span className="block h-0.5 bg-[#3398FF] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-6 ml-4">
-          <div
-            className={`hover:opacity-80 cursor-pointer${
-              isFirst ? " opacity-30 pointer-events-none" : ""
-            }`}
-            onClick={isFirst ? undefined : onMoveUp}
-          >
-            <img
-              src="/up.svg"
-              alt="Move Up"
-              className="w-6 h-6"
-              style={{
-                filter:
-                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
-              }}
-            />
+        <div className="flex items-center w-full">
+          <div className="flex-1 min-w-0 text-[#215273] font-semibold text-lg relative truncate">
+            {editingTitle ? (
+              <div className="relative w-full">
+                <input
+                  className="font-semibold text-lg text-[#215273] outline-none "
+                  value={chartTitle}
+                  autoFocus
+                  onChange={(e) => setChartTitle(e.target.value)}
+                  onBlur={() => setEditingTitle(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") setEditingTitle(false);
+                  }}
+                  style={{ minWidth: 120 }}
+                />
+                <span className="block h-0.5 bg-[#3398FF] scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
+              </div>
+            ) : (
+              <span
+                className="cursor-pointer group inline-block w-full relative truncate"
+                onClick={() => setEditingTitle(true)}
+                title="Click to edit title"
+              >
+                {chartTitle}
+                <span className="block h-0.5 bg-[#3398FF] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200 mt-1 rounded-full" />
+              </span>
+            )}
           </div>
+          {/* Product View Button */}
           <div
-            className={`hover:opacity-80 cursor-pointer${
-              isLast ? " opacity-30 pointer-events-none" : ""
-            }`}
-            onClick={isLast ? undefined : onMoveDown}
+            className="flex items-center gap-2 px-2 py-1 rounded hover:cursor-pointer whitespace-nowrap ml-20"
+            onClick={handleProductViewClick}
+            title="Product View"
           >
-            <img
-              src="/down.svg"
-              alt="Move Down"
-              className="w-6 h-6"
-              style={{
-                filter:
-                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
-              }}
-            />
-          </div>
-          <div
-            className="hover:opacity-80 cursor-pointer"
-            onClick={onDuplicate}
-          >
-            <img
-              src="/duplicate.svg"
-              alt="Duplicate"
-              className="w-6 h-6"
-              style={{
-                filter:
-                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
-              }}
-            />
-          </div>
-          <div className="hover:opacity-80 cursor-pointer" onClick={onDelete}>
-            <img
-              src="/delete.svg"
-              alt="Delete"
-              className="w-6 h-6"
-              style={{
-                filter:
-                  "invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)",
-              }}
-            />
+            {/* product view icon */}
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="4" height="4" rx="1" fill="#3398FF"/>
+              <rect x="9" y="2" width="4" height="4" rx="1" fill="#3398FF"/>
+              <rect x="16" y="2" width="4" height="4" rx="1" fill="#3398FF"/>
+              <rect x="2" y="9" width="4" height="4" rx="1" fill="#3398FF"/>
+              <rect x="9" y="9" width="4" height="4" rx="1" fill="#3398FF"/>
+              <rect x="16" y="9" width="4" height="4" rx="1" fill="#3398FF"/>
+              <rect x="2" y="16" width="4" height="4" rx="1" fill="#3398FF"/>
+              <rect x="9" y="16" width="4" height="4" rx="1" fill="#3398FF"/>
+              <rect x="16" y="16" width="4" height="4" rx="1" fill="#3398FF"/>
+            </svg>
+            <span className="text-[#3398FF] font-sm whitespace-nowrap">Product View</span>
           </div>
         </div>
       </div>
@@ -803,7 +835,7 @@ const ChartCard = ({
         </div>
 
       {/* Filter row */}
-      <div className="mb-6">
+      <div className="mb-6 bg-white">
             {/* Date range row (always present) */}
         <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px] rounded-t-md">
               <span
@@ -1097,6 +1129,7 @@ const ChartCard = ({
             activeTooltipIndex={activeTooltipIndex}
             setActiveTooltipIndex={setActiveTooltipIndex}
             chartHeight={550}
+            selectedBar={selectedBar}
           />
         </div>
         {/* Two smaller charts */}

@@ -17,7 +17,7 @@ const CustomBuyerTooltip = ({ active, payload, label }) => {
 };
 
 const BuyerRankingChart = ({ buyerRanking, height = 250 }) => (
-  <div className="bg-[#F9FBFC] rounded-lg border border-[#DDE9F3] p-4 h-full flex flex-col">
+  <div className="bg-white rounded-lg border border-[#DDE9F3] p-4 h-full flex flex-col">
     <div className="text-[#215273] font-semibold text-base mb-6">PO quantities by companies</div>
     <div className="flex-1 min-h-0">
       <ResponsiveContainer width="100%" height="100%">
