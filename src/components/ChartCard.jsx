@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import shirtData from "../data/shirts.js";
+import catalogueData from "../data/catalogue.js";
 import Modal from "./Modal";
 import MainChart from "./MainChart";
 import MarginPieChart from "./MarginPieChart";
@@ -50,7 +50,7 @@ function filterProductsByDate(products, start, end) {
 
 function getAllProducts() {
   let allProducts = [];
-  shirtData.clothing_inventory.forEach((seasonObj) => {
+  catalogueData.clothing_inventory.forEach((seasonObj) => {
     seasonObj.product_lines.forEach((line) => {
       line.products.forEach((product) => {
         allProducts.push({
@@ -142,7 +142,7 @@ function getChartData({
   selectedBuyers,
 }) {
   let allProducts = [];
-  shirtData.clothing_inventory.forEach((seasonObj) => {
+  catalogueData.clothing_inventory.forEach((seasonObj) => {
     seasonObj.product_lines.forEach((line) => {
       line.products.forEach((product) => {
         allProducts.push({
@@ -390,7 +390,7 @@ const ChartCard = ({
 
   // --- Buyer ranking chart data (now inside component) ---
   let allFilteredProducts = [];
-  shirtData.clothing_inventory.forEach((seasonObj) => {
+  catalogueData.clothing_inventory.forEach((seasonObj) => {
     seasonObj.product_lines.forEach((line) => {
       line.products.forEach((product) => {
         // Apply the same date filtering as getChartData
@@ -730,7 +730,7 @@ const ChartCard = ({
             {editingTitle ? (
               <div className="relative w-full">
                 <input
-                  className="font-semibold text-lg text-[#215273] bg-white outline-none w-full"
+                  className="font-semibold text-lg text-[#215273] outline-none "
                   value={chartTitle}
                   autoFocus
                   onChange={(e) => setChartTitle(e.target.value)}
@@ -755,10 +755,11 @@ const ChartCard = ({
           </div>
           {/* Product View Button */}
           <div
-            className="flex items-center gap-2 px-2 py-1 rounded hover:cursor-pointer whitespace-nowrap ml-4"
+            className="flex items-center gap-2 px-2 py-1 rounded hover:cursor-pointer whitespace-nowrap ml-20"
             onClick={handleProductViewClick}
             title="Product View"
           >
+            {/* product view icon */}
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="2" y="2" width="4" height="4" rx="1" fill="#3398FF"/>
               <rect x="9" y="2" width="4" height="4" rx="1" fill="#3398FF"/>
