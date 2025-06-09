@@ -23,6 +23,7 @@ import ProductSidePanel from "./ProductSidePanel";
 const chartTypes = [
   { value: "bar", label: "Bar" },
   { value: "line", label: "Line" },
+  { value: "stackedBar", label: "Stacked Bar" },
 ];
 
 const viewByOptions = [
@@ -39,6 +40,14 @@ const dateRangeTypes = [
   { value: "year", label: "Year" },
   { value: "quarter", label: "Quarter" },
   { value: "month", label: "Month" },
+];
+
+const stackByOptions = [
+  { value: "season", label: "Season" },
+  { value: "line", label: "Product Line" },
+  { value: "color", label: "Color" },
+  { value: "fabric", label: "Fabric" },
+  { value: "type", label: "Type" },
 ];
 
 function filterProductsByDate(products, start, end) {
@@ -314,8 +323,9 @@ const ChartCard = ({
   const [mainChartTitle, setMainChartTitle] = useState(chartTitle);
   const [editingMainChartTitle, setEditingMainChartTitle] = useState(false);
   const [mainChartType, setMainChartType] = useState(chartType);
-  const [mainChartViewBy, setMainChartViewBy] = useState("quantity"); // PO Quantities, cost, margin, price
-  const [mainChartCategory, setMainChartCategory] = useState("season"); // season, line, color, fabric, type
+  const [mainChartViewBy, setMainChartViewBy] = useState("quantity");
+  const [mainChartCategory, setMainChartCategory] = useState("season");
+  const [mainChartStackBy, setMainChartStackBy] = useState(null);
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -707,6 +717,37 @@ const ChartCard = ({
     if (selectedBuyers.length > 0) parts.push(`Buyer: ${selectedBuyers.join(', ')}`);
     return parts.join(' | ');
   };
+
+  // Stacked bar data transformation
+  const getStackedBarData = () => {
+    if (!mainChartStackBy || mainChartStackBy === mainChartCategory) return [];
+    // Get all unique stack keys
+    const stackKeysSet = new Set();
+    chartData.forEach(group => {
+      group.products.forEach(prod => {
+        const val = prod[mainChartStackBy];
+        if (Array.isArray(val)) val.forEach(v => stackKeysSet.add(v));
+        else if (val) stackKeysSet.add(val);
+      });
+    });
+    const stackKeys = Array.from(stackKeysSet);
+    // Build data array
+    const data = chartData.map(group => {
+      const row = { [mainChartCategory]: group.x };
+      stackKeys.forEach(key => {
+        // Sum quantity for this stack key in this group
+        row[key] = group.products.reduce((sum, prod) => {
+          const val = prod[mainChartStackBy];
+          if (Array.isArray(val)) return sum + (val.includes(key) ? (prod.quantity_sold || 0) : 0);
+          return sum + (val === key ? (prod.quantity_sold || 0) : 0);
+        }, 0);
+      });
+      return row;
+    });
+    return { data, stackKeys };
+  };
+
+  const stackedBarDataObj = mainChartType === "stackedBar" ? getStackedBarData() : null;
 
   return (
     <div
@@ -1125,7 +1166,10 @@ const ChartCard = ({
             setViewBy={setMainChartViewBy}
             categoryBy={mainChartCategory}
             setCategoryBy={setMainChartCategory}
-            chartData={chartData}
+            chartData={mainChartType === "stackedBar" ? (stackedBarDataObj ? stackedBarDataObj.data : []) : chartData}
+            stackedBarKeys={mainChartType === "stackedBar" ? (stackedBarDataObj ? stackedBarDataObj.stackKeys : []) : []}
+            stackBy={mainChartType === "stackedBar" ? mainChartStackBy : null}
+            setStackBy={mainChartType === "stackedBar" ? setMainChartStackBy : undefined}
             handleBarOrDotClick={handleBarOrDotClick}
             activeTooltipIndex={activeTooltipIndex}
             setActiveTooltipIndex={setActiveTooltipIndex}

@@ -84,6 +84,7 @@ const CustomTick = ({ x, y, payload, width, data }) => {
 const chartTypes = [
   { value: "bar", label: "bar" },
   { value: "line", label: "line" },
+  { value: "stackedBar", label: "stackedBar" },
 ];
 const yAxisOptions = [
   { value: "quantity", label: "PO Quantities" },
@@ -116,6 +117,9 @@ const MainChart = ({
   setActiveTooltipIndex,
   chartHeight = 550,
   selectedBar,
+  stackBy,
+  stackedBarKeys,
+  setStackBy,
 }) => {
   // Compute yKey for chart
   let yKey = viewBy;
@@ -142,6 +146,8 @@ const MainChart = ({
     if (!selectedBar) return "#C4E7FF";
     return (d.x === selectedBar) ? "#C4E7FF" : "#E9EDEF";
   };
+
+  const stackedBarColors = ["#E9F6FF", "#C4E7FF", "#9DD6FF", "#6BB1E4"];
 
   return (
     <div
@@ -227,6 +233,22 @@ const MainChart = ({
           </select>
           <span className="text-text-color font-medium"> chart </span>
         </div>
+        {/* Stack by dropdown for stackedBar */}
+        {chartType === "stackedBar" && (
+          <div className="flex items-center gap-2">
+            <span className="text-text-color font-medium">Stack by</span>
+            <select
+              className="bg-[#E6F0F8] text-[#3398FF] rounded px-2 py-1"
+              value={stackBy || ""}
+              onChange={e => setStackBy(e.target.value)}
+            >
+              <option value="" disabled>Select</option>
+              {xAxisOptions.filter(opt => opt.value !== categoryBy).map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       {/* Chart */}
       <div className="flex-1 min-h-[400px]">
@@ -266,6 +288,55 @@ const MainChart = ({
                 ))}
               </Bar>
             </BarChart>
+          ) : chartType === "stackedBar" ? (
+            Array.isArray(stackedBarKeys) && stackedBarKeys.length > 0 && Array.isArray(chartData) && chartData.length > 0 ? (
+              <BarChart
+                data={chartData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid stroke="#EAEAEA" />
+                <XAxis
+                  dataKey={categoryBy}
+                  stroke="#A3B3BF"
+                  tick={(props) => <CustomTick {...props} data={chartData} />}
+                  height={30}
+                  interval={0}
+                />
+                <YAxis stroke="#A3B3BF" tick={{ fill: "#7C93A3", fontSize: 14 }} />
+                <Tooltip
+                  content={<CustomChartTooltip yKey={stackBy} />}
+                  cursor={{ fill: "#E6F0F8" }}
+                />
+                {stackedBarKeys.map((key, idx) => (
+                  <Bar
+                    key={key}
+                    dataKey={key}
+                    stackId="a"
+                    fill={stackedBarColors[idx % stackedBarColors.length]}
+                    isAnimationActive={false}
+                    label={({ x, y, width, height, value }) => {
+                      if (!value || value === 0 || !height || height < 14) return null;
+                      return (
+                        <g>
+                          <text
+                            x={x + width / 2}
+                            y={y + height / 2 + 4}
+                            textAnchor="middle"
+                            fill="#215273"
+                            fontSize={10}
+                            fontWeight="bold"
+                          >
+                            {key}
+                          </text>
+                        </g>
+                      );
+                    }}
+                  />
+                ))}
+              </BarChart>
+            ) : (
+              <div className="flex items-center justify-center h-full text-caption-color text-sm">Select a stack by attribute to display the stacked bar chart.</div>
+            )
           ) : (
             <LineChart
               data={displayData}

@@ -13,7 +13,7 @@ const yKeyLabels = {
 const CustomChartTooltip = ({ active, payload, label, yKey = 'quantity' }) => {
   if (active && payload && payload.length && payload[0].payload) {
     const { avgPrice, avgCost, products, quantity, cost, margin, price } = payload[0].payload;
-    const topProducts = products.slice(0, 3);
+    const topProducts = Array.isArray(products) ? products.slice(0, 3) : [];
     let value = payload[0].payload[yKey];
     let valueLabel = yKeyLabels[yKey] || yKey;
     let valueDisplay = value;
@@ -29,19 +29,23 @@ const CustomChartTooltip = ({ active, payload, label, yKey = 'quantity' }) => {
         <div className="flex gap-2">
           {topProducts.map((prod, idx) => (
             <img
-              key={prod.product_id}
-              src={prod.image_url.replace('public/', '/')}
-              alt={prod.name}
+              key={prod.product_id || idx}
+              src={prod.image_url ? prod.image_url.replace('public/', '/') : ''}
+              alt={prod.name || ''}
               className="w-16 h-16 object-cover rounded border border-light-border"
               style={{ background: '#F9FBFC' }}
             />
           ))}
         </div>
-        {yKey === 'quantity' && (
+        {yKey === 'quantity' && quantity !== undefined && (
           <div className="text-text-color text-sm font-semibold mt-4">Total Sold: {quantity}</div>
         )}
-        <div className="text-text-color text-sm font-semibold">Avg Price: ${avgPrice.toFixed(2)}</div>
-        <div className="text-text-color text-sm font-semibold">Avg Cost: ${avgCost.toFixed(2)}</div>
+        {avgPrice !== undefined && (
+          <div className="text-text-color text-sm font-semibold">Avg Price: ${Number(avgPrice).toFixed(2)}</div>
+        )}
+        {avgCost !== undefined && (
+          <div className="text-text-color text-sm font-semibold">Avg Cost: ${Number(avgCost).toFixed(2)}</div>
+        )}
       </div>
     );
   }
