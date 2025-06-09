@@ -3,6 +3,7 @@ import ChartCard from "./components/ChartCard";
 import Toolbar from "./components/Toolbar";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import './App.css'
 
 const defaultChartSettings = () => ({
   chartType: "bar",
@@ -94,14 +95,14 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FBFC] w-screen">
+    <div className="min-h-screen bg-background-color w-screen">
       <Toolbar
         onCreateChart={() => setCharts(prev => [defaultChartSettings(), ...prev])}
         onPrintPage={handlePrintPage}
       />
       <main className="w-full pt-18 mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {charts.length === 0 ? (
-          <div className="text-center text-[#A3B3BF]">No charts. Add one!</div>
+          <div className="text-center text-caption-color">No charts. Add one!</div>
         ) : (
           charts.map((chart, idx) => (
             <div
@@ -140,7 +141,7 @@ const App = () => {
         )}
         {printing && (
           <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[9999]">
-            <div className="bg-white px-8 py-6 rounded-xl shadow text-[#215273] text-lg font-semibold">Generating PDF...</div>
+            <div className="bg-white px-8 py-6 rounded-xl shadow text-text-color text-lg font-semibold">Generating PDF...</div>
       </div>
         )}
       </main>

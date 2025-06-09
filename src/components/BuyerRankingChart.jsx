@@ -7,7 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 const CustomBuyerTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="p-2 rounded border border-[#DDE9F3] bg-white" style={{ color: '#215273' }}>
+      <div className="p-2 rounded border border-light-border bg-white" style={{ color: '#215273' }}>
         <div className="font-semibold">{label}</div>
         <div>PO Quantity: {payload[0].value}</div>
       </div>
@@ -17,8 +17,8 @@ const CustomBuyerTooltip = ({ active, payload, label }) => {
 };
 
 const BuyerRankingChart = ({ buyerRanking, height = 250 }) => (
-  <div className="bg-white rounded-lg border border-[#DDE9F3] p-4 h-full flex flex-col">
-    <div className="text-[#215273] font-semibold text-base mb-6">PO quantities by companies</div>
+  <div className="bg-white rounded-lg border border-light-border p-4 h-full flex flex-col">
+    <div className="text-text-color font-semibold text-base mb-6">PO quantities by companies</div>
     <div className="flex-1 min-h-0">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={buyerRanking} layout="vertical" margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>

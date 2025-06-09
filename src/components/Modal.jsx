@@ -71,11 +71,11 @@ const Modal = ({ open, onClose, label, products }) => {
   if (!products || products.length === 0) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20" onClick={onClose}>
-        <div className="bg-white rounded-xl border border-[#DDE9F3] p-8 max-w-3xl w-full max-h-[80vh] overflow-y-auto relative shadow-xl" onClick={e => e.stopPropagation()}>
+        <div className="bg-white rounded-xl border border-light-border p-8 max-w-3xl w-full max-h-[80vh] overflow-y-auto relative shadow-xl" onClick={e => e.stopPropagation()}>
           <div className="absolute p-4 top-4 right-4 text-[#A3B3BF] text-2xl font-bold hover:opacity-70 cursor-pointer select-none" onClick={onClose} role="button" tabIndex={0} aria-label="Close modal" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClose(); }}>
             <img src="/close.svg" alt="Close" className="w-7 h-7" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
           </div>
-          <div className="text-[#215273] font-semibold text-lg mb-4">{label}</div>
+          <div className="text-text-color font-semibold text-lg mb-4">{label}</div>
           <div className="text-[#A3B3BF]">No products in this group.</div>
         </div>
       </div>
@@ -88,25 +88,25 @@ const Modal = ({ open, onClose, label, products }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20" onClick={onClose}>
-      <div className="bg-white rounded-xl border border-[#DDE9F3] p-8 max-w-5xl w-full max-h-[80vh] overflow-x-auto overflow-y-auto relative shadow-xl" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-xl border border-light-border p-8 max-w-5xl w-full max-h-[80vh] overflow-x-auto overflow-y-auto relative shadow-xl" onClick={e => e.stopPropagation()}>
         <div className="absolute p-4 top-4 right-4 text-[#A3B3BF] text-2xl font-bold hover:opacity-70 cursor-pointer select-none" onClick={onClose} role="button" tabIndex={0} aria-label="Close modal" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClose(); }}>
           <img src="/close.svg" alt="Close" className="w-7 h-7" style={{ filter: 'invert(56%) sepia(7%) saturate(370%) hue-rotate(169deg) brightness(93%) contrast(87%)' }} />
         </div>
-        <div className="text-[#215273] font-semibold text-lg mb-4">{label}</div>
+        <div className="text-text-color font-semibold text-lg mb-4">{label}</div>
         <div className="overflow-x-auto">
           <table className="min-w-full border-separate border-spacing-y-2">
             <thead>
-              <tr className="bg-[#F9FBFC]">
+              <tr className="bg-background-color">
                 {columns.map(key => (
-                  <th key={key} className="px-4 py-2 text-[#215273] font-semibold text-base text-left whitespace-nowrap border-b border-[#E9EDEF]">{COLUMN_MAP[key] || key}</th>
+                  <th key={key} className="px-4 py-2 text-text-color font-semibold text-base text-left whitespace-nowrap border-b border-[#E9EDEF]">{COLUMN_MAP[key] || key}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {products.map((prod, idx) => (
-                <tr key={prod.product_id || idx} className="bg-white hover:bg-[#F5F8FA]">
+                <tr key={prod.product_id || idx} className="bg-background-color hover:bg-[#F5F8FA]">
                   {columns.map(key => (
-                    <td key={key} className="px-4 py-2 text-[#215273] text-base border-b border-[#E9EDEF] align-middle whitespace-nowrap">
+                    <td key={key} className="px-4 py-2 text-text-color text-base border-b border-[#E9EDEF] align-middle whitespace-nowrap">
                       {formatValue(key, key === 'margin' ? getMargin(prod) : prod[key], prod)}
                     </td>
                   ))}

@@ -77,7 +77,7 @@ const ProductSidePanel = ({ open, onClose, products, filterLabel }) => {
     return (
       <aside className="fixed top-16 right-0 w-[40vw] h-[calc(100vh-4rem)] bg-white border-l border-[#E9EDEF] flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-[#E9EDEF]">
-          <span className="text-[#215273] font-semibold text-lg">
+          <span className="text-text-color font-semibold text-lg">
             Product View
           </span>
         </div>
@@ -88,9 +88,16 @@ const ProductSidePanel = ({ open, onClose, products, filterLabel }) => {
   const first = products[0];
   const columns = COLUMN_ORDER.filter((key) => key in first);
   return (
-    <aside className="fixed top-16 right-0 w-[40vw] h-[calc(100vh-4rem)] bg-white border-l border-[#E9EDEF] flex flex-col">
-      <div className="flex flex-col justify-between w-full border-b border-[#E9EDEF] p-4">
-        <div className="text-[#215273] font-medium text-base">Product View</div>
+    <aside className="fixed top-16 right-0 w-[40vw] h-[calc(100vh-4rem)] bg-white border-l border-light-border flex flex-col">
+      <div className="flex flex-col justify-between w-full border-b border-light-border p-4">
+        {/* collapse button */}
+        <div className="flex items-center gap-2 mb-2 w-fit" onClick={onClose} style={{cursor:'pointer'}}>
+          <img src="/collapse.svg" alt="Collapse" className="w6 h-6 rotate-180" />
+          <div className="text-caption-color font-medium text-base">
+            Hide Product View
+          </div>
+        </div>
+        {/* filter label */}
         <div className="text-[#3398FF] font-medium text-base">
           {filterLabel}
         </div>
@@ -99,11 +106,11 @@ const ProductSidePanel = ({ open, onClose, products, filterLabel }) => {
       <div className="overflow-x-auto flex-1 p-6">
         <table className="min-w-full border-separate border-spacing-y-2">
           <thead>
-            <tr className="bg-[#F9FBFC]">
+            <tr className="bg-background-color">
               {columns.map((key) => (
                 <th
                   key={key}
-                  className="px-4 py-2 text-[#215273] font-semibold text-base text-left whitespace-nowrap border-b border-[#E9EDEF]"
+                  className="px-4 py-2 text-text-color font-semibold text-base text-left whitespace-nowrap border-b border-[#E9EDEF]"
                 >
                   {COLUMN_MAP[key] || key}
                 </th>
@@ -119,7 +126,7 @@ const ProductSidePanel = ({ open, onClose, products, filterLabel }) => {
                 {columns.map((key) => (
                   <td
                     key={key}
-                    className="px-4 py-2 text-[#215273] text-base border-b border-[#E9EDEF] align-middle whitespace-nowrap"
+                    className="px-4 py-2 text-text-color text-base border-b border-[#E9EDEF] align-middle whitespace-nowrap"
                   >
                     {formatValue(
                       key,

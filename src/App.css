@@ -1,9 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-    --color-background: #F9FBFC;
-    --color-light-blue: #E6F0F8;
-    --color-blue: #C3E7FE;
-    --color-caption: #A3B3BF;
-    --color-text: #215273;
-}
+    --color-background-color: #F9FBFC;
+    --color-caption-color: #60727E;
+    --color-text-color: #215273;
+    --color-primary-color: #3398FF;
+    --color-light-blue: #C4E7FF;
+    --color-inactive-color: #E9EDEF; 
+    --color-light-border: #DDE9F3;
+  }
+
+  @layer components {
+    .light-border {
+      @apply border-[#DDE9F3];
+    }
+  }

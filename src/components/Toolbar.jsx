@@ -30,7 +30,7 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
   };
 
   return (
-    <header className="w-full bg-[#F9FBFC] fixed top-0 left-0 right-0 z-50 border-b border-[#E9EDEF]">
+    <header className="w-full bg-background-color fixed top-0 left-0 right-0 z-50 border-b border-[#E9EDEF]">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left: Avatar */}
@@ -41,7 +41,7 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
           </div>
 
           {/* Center: Tabs */}
-          <nav className="flex space-x-8 text-sm font-medium absolute left-1/2 -translate-x-1/2">
+          {/* <nav className="flex space-x-8 text-sm font-medium absolute left-1/2 -translate-x-1/2">
             <div
               onClick={() => handleTabClick("analytics")}
               className={`cursor-pointer pb-1 ${
@@ -72,17 +72,17 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
             >
               TBD
             </div>
-          </nav>
+          </nav> */}
 
           {/* Right: Create Chart + Share + Print */}
           <div className="flex">
-            <div
+            {/* <div
               onClick={onCreateChart}
               className="px-3 py-1.5 text-sm rounded text-gray-600 hover:text-[#3398FF] cursor-pointer flex items-center gap-2"
             >
               <img src="/add.svg" alt="Add" className="w-6 h-6" />
               Create Chart
-            </div>
+            </div> */}
             <div
               onClick={handleDownloadPDF}
               className="px-2 py-1.5 text-sm rounded text-gray-600 hover:text-[#3398FF] cursor-pointer flex items-center gap-2 min-w-[180px]"
@@ -97,7 +97,8 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
               )}
               Download Report PDF
             </div>
-            <div
+            {/* share button */}
+            {/* <div
               //   onClick={() => alert('Share placeholder')}
               className="px-3 py-1.5 text-sm rounded text-gray-600 hover:text-[#3398FF] cursor-pointer flex items-center gap-2"
             >
@@ -106,7 +107,7 @@ const Toolbar = ({ onCreateChart, onPrintPage }) => {
                 <img src="/share.svg" alt="Download" className="w-full" />
               </span>
               Share
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

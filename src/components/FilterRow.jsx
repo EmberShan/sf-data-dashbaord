@@ -81,7 +81,7 @@ const FilterRow = ({
   return (
     <div className={`flex items-center gap-4 w-full border border-[#E9EDEF] p-4 mb-[-1px] ${isLast ? ' rounded-b-md' : ''}`}>
       <span
-        className="text-[#215273] font-medium w-[120px] text-left"
+        className="text-text-color font-medium w-[120px] text-left"
         style={{ color: "#215273" }}
       >
         {label}
@@ -116,10 +116,10 @@ const FilterRow = ({
             tabIndex={-1}
           >
             <div
-              className={`px-3 py-1 rounded cursor-pointer font-medium text-[#215273] ${
+              className={`px-3 py-1 rounded cursor-pointer font-medium text-text-color ${
                 allSelected
                   ? "bg-[#E6F0F8] text-[#3398FF]"
-                  : "hover:bg-[#F5F8FA]"
+                  : "hover:bg-[#F5F8FA] text-text-color"
               }`}
               onClick={handleSelectAll}
               aria-selected={allSelected}
@@ -129,7 +129,7 @@ const FilterRow = ({
             <div className="my-2 border-t border-[#E9EDEF]" />
             <input
               type="text"
-              className="w-full px-2 py-1 mb-2 rounded border border-[#E9EDEF] text-[#215273] bg-transparent focus:outline-none"
+              className="w-full px-2 py-1 mb-2 rounded border border-[#E9EDEF] text-text-color bg-transparent focus:outline-none"
               placeholder={`Search ${label.toLowerCase()}...`}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -142,7 +142,7 @@ const FilterRow = ({
                   className={`px-3 py-1 rounded cursor-pointer flex items-center gap-2 ${
                     selectedValues.includes(val)
                       ? "bg-[#E6F0F8] text-[#3398FF]"
-                      : "hover:bg-[#F5F8FA] text-[#215273]"
+                      : "hover:bg-[#F5F8FA] text-text-color"
                   }`}
                   onClick={() => handleSelectValue(val)}
                   aria-selected={selectedValues.includes(val)}
@@ -180,7 +180,7 @@ const FilterRow = ({
             >
               {val}
               <span
-                className="ml-1 cursor-pointer text-[#A3B3BF] hover:text-[#215273]"
+                className="ml-1 cursor-pointer text-[#A3B3BF] hover:text-text-color"
                 tabIndex={0}
                 aria-label={`Remove ${val}`}
                 onClick={() => handleRemoveChip(val)}
@@ -194,7 +194,7 @@ const FilterRow = ({
           ))}
       </div>
       <span
-        className="ml-auto cursor-pointer text-[#A3B3BF] hover:text-[#215273] text-xl"
+        className="ml-auto cursor-pointer text-[#A3B3BF] hover:text-text-color text-xl"
         tabIndex={0}
         aria-label={`Remove ${label} filter`}
         onClick={() => {

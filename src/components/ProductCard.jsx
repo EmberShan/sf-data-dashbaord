@@ -5,7 +5,7 @@ import React from "react";
 
 export default function ProductCard({ product, season, productLine }) {
   return (
-    <div className="w-[190px] bg-white border border-[#DDE9F3] rounded-lg p-2 flex flex-col items-center relative">
+    <div className="w-[190px] bg-white border border-light-border rounded-lg p-2 flex flex-col items-center relative">
       <div className="w-[180px] h-[180px] bg-[#ddd] rounded mb-3 flex items-center justify-center overflow-hidden">
         <img
           src={product.image_url}

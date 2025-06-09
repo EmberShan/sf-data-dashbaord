@@ -60,7 +60,7 @@ const CustomTick = ({ x, y, payload, width, data }) => {
       </text>
       {showTooltip && isTruncated && createPortal(
         <div
-          className="bg-white p-2 rounded shadow border border-[#DDE9F3] text-[#215273] text-sm whitespace-nowrap"
+          className="bg-white p-2 rounded shadow border border-light-border text-text-color text-sm whitespace-nowrap"
           style={{
             position: 'fixed',
             left: tooltipPosition.x,
@@ -145,11 +145,11 @@ const MainChart = ({
 
   return (
     <div
-      className="flex-1 min-w-0 bg-white rounded-lg border border-[#DDE9F3] p-4 flex flex-col justify-center"
+      className="flex-1 min-w-0 bg-white rounded-lg border border-light-border p-4 flex flex-col justify-center"
       style={{ height: '100%'}}
     >
       {/* Editable title */}
-      <div className="text-[#215273] font-semibold text-lg flex-1 min-w-[180px] relative">
+      <div className="text-text-color font-semibold text-lg flex-1 min-w-[180px] relative">
         {editingTitle ? (
           <div className="relative">
             <input
@@ -182,7 +182,7 @@ const MainChart = ({
         
         {/* View by (y-axis) */}
         <div className="flex items-center gap-2">
-          <span className="text-[#215273] font-medium">Rank</span>
+          <span className="text-text-color font-medium">Rank</span>
           <select
             className="bg-[#E6F0F8] text-[#3398FF] rounded px-2 py-1"
             value={viewBy}
@@ -197,7 +197,7 @@ const MainChart = ({
         </div>
         {/* Categorized by (x-axis) */}
         <div className="flex items-center gap-2">
-          <span className="text-[#215273] font-medium">Categorized by</span>
+          <span className="text-text-color font-medium">Categorized by</span>
           <select
             className="bg-[#E6F0F8] text-[#3398FF] rounded px-2 py-1"
             value={categoryBy}
@@ -213,7 +213,7 @@ const MainChart = ({
 
         {/* Chart type */}
         <div className="flex items-center gap-2">
-          <span className="text-[#215273] font-medium"> in a </span>
+          <span className="text-text-color font-medium"> in a </span>
           <select
             className="bg-[#E6F0F8] text-[#3398FF] rounded px-2 py-1"
             value={chartType}
@@ -225,7 +225,7 @@ const MainChart = ({
               </option>
             ))}
           </select>
-          <span className="text-[#215273] font-medium"> chart </span>
+          <span className="text-text-color font-medium"> chart </span>
         </div>
       </div>
       {/* Chart */}

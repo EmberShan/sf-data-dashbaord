@@ -510,14 +510,12 @@ const ChartCard = ({
 
   // Product View button handler (toggle)
   const handleProductViewClick = () => {
-    if (sidePanelOpen && !sidePanelFilterLabel) {
+    if (sidePanelOpen) {
       setSidePanelOpen(false);
-      return;
+      setSelectedBar(null);
+    } else {
+      setSidePanelOpen(true);
     }
-    setSidePanelProducts(getAllFilteredProducts());
-    setSidePanelFilterLabel("");
-    setSidePanelOpen(true);
-    setSelectedBar(null);
   };
 
   // Update side panel products live when filters change and no bar/dot is selected
@@ -716,7 +714,10 @@ const ChartCard = ({
     >
       <ProductSidePanel
         open={sidePanelOpen}
-        onClose={() => setSidePanelOpen(false)}
+        onClose={() => {
+          setSidePanelOpen(false);
+          setSelectedBar(null);
+        }}
         products={sidePanelProducts}
         filterLabel={
           sidePanelFilterLabel
@@ -726,11 +727,11 @@ const ChartCard = ({
       />
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center w-full">
-          <div className="flex-1 min-w-0 text-[#215273] font-semibold text-lg relative truncate">
+          <div className="flex-1 min-w-0 text-text-color font-semibold text-lg relative truncate">
             {editingTitle ? (
               <div className="relative w-full">
                 <input
-                  className="font-semibold text-lg text-[#215273] outline-none "
+                  className="font-semibold text-lg text-text-color outline-none "
                   value={chartTitle}
                   autoFocus
                   onChange={(e) => setChartTitle(e.target.value)}
@@ -839,7 +840,7 @@ const ChartCard = ({
             {/* Date range row (always present) */}
         <div className="flex flex-wrap items-center gap-4 border border-[#E9EDEF] p-4 my-[-1px] rounded-t-md">
               <span
-                className="text-[#215273] font-medium w-[90px] text-left"
+                className="text-text-color font-medium w-[90px] text-left"
                 style={{ color: "#215273" }}
               >
                 Date Range
@@ -849,7 +850,7 @@ const ChartCard = ({
                 <div className="relative w-full">
                   <input
                     type="date"
-                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
+                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-text-color focus:outline-none"
                     value={customStart.toISOString().slice(0, 10)}
                     onChange={(e) => {
                       setCustomStart(new Date(e.target.value));
@@ -871,7 +872,7 @@ const ChartCard = ({
                 <div className="relative w-full">
                   <input
                     type="date"
-                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-[#215273] focus:outline-none"
+                    className="w-full px-1 py-0.5 rounded border border-[#E9EDEF] bg-transparent text-text-color focus:outline-none"
                     value={customEnd.toISOString().slice(0, 10)}
                     onChange={(e) => {
                       setCustomEnd(new Date(e.target.value));
@@ -904,7 +905,7 @@ const ChartCard = ({
                       className={`px-3 py-1 rounded border border-[#E9EDEF] text-sm font-medium cursor-pointer select-none transition-colors ${
                         isActive
                           ? "bg-[#DCF1FF] text-[#3398FF]"
-                          : "bg-[#F4F6F7] text-[#215273] hover:bg-[#F5F8FA]"
+                          : "bg-[#F4F6F7] text-text-color hover:bg-[#F5F8FA]"
                       }`}
                       onClick={() => {
                         setDateRangeType(opt.type);
@@ -955,7 +956,7 @@ const ChartCard = ({
               className="absolute left-0 top-full w-48 bg-white border border-[#E9EDEF] rounded shadow-lg z-50"
             >
               <div
-                className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273] font-semibold border-b border-[#E9EDEF]"
+                className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-text-color font-semibold border-b border-[#E9EDEF]"
                 onClick={() => {
                   const all = ["Color", "Fabric", "Season", "Line", "Buyer"];
                   setActiveFilters([
@@ -972,7 +973,7 @@ const ChartCard = ({
                 .map((f) => (
                   <div
                     key={f}
-                    className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-[#215273]"
+                    className="px-4 py-2 hover:bg-[#F5F8FA] cursor-pointer text-text-color"
                     onClick={() => {
                       setActiveFilters([...activeFilters, f]);
                       setAddFilterDropdownOpen(false);
